@@ -1,0 +1,16 @@
+[Unit]
+Description=Tunnix Control Plane API Server
+After=network.target
+
+[Service]
+Type=simple
+User=tunnix
+WorkingDirectory=/var/www/tunnix/apps/server
+ExecStart=/usr/local/bin/bun run src/server.ts
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+EnvironmentFile=/var/www/tunnix/apps/server/.env
+
+[Install]
+WantedBy=multi-user.target
