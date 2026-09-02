@@ -8,6 +8,9 @@ import type { AppVariables } from "./core/types";
 import { requestLogger } from "./middleware/request-logger";
 import { healthRoutes } from "./modules/health/health.routes";
 import { authRoutes } from "./modules/auth/auth.routes";
+import { agentTokenRoutes } from "./modules/agent/agent-token.routes";
+import { agentAuthRoutes } from "./modules/agent/agent-auth.routes";
+import { subdomainRoutes } from "./modules/subdomain/subdomain.routes";
 
 export const app = new Hono<{ Variables: AppVariables }>();
 
@@ -40,6 +43,9 @@ app.get("/", (c) => {
 
 app.route("/health", healthRoutes);
 app.route("/v1/auth", authRoutes);
+app.route("/v1/agent-tokens", agentTokenRoutes);
+app.route("/v1/auth/agent-login", agentAuthRoutes);
+app.route("/v1/subdomains", subdomainRoutes);
 
 // NOTE: Auth, tunnel, agent, and admin routes will be mounted here in Phase 2+
 

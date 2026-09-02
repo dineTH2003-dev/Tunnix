@@ -5,9 +5,12 @@ import { openDb } from "../src/core/db/db";
 beforeEach(() => {
   // Clean up database tables for test isolation
   const db = openDb();
-  db.exec("DELETE FROM otp_request_events;");
-  db.exec("DELETE FROM otp_challenges;");
+  db.exec("DELETE FROM tunnel_sessions;");
+  db.exec("DELETE FROM reserved_subdomains;");
+  db.exec("DELETE FROM agent_tokens;");
   db.exec("DELETE FROM sessions;");
+  db.exec("DELETE FROM otp_challenges;");
+  db.exec("DELETE FROM otp_request_events;");
   db.exec("DELETE FROM users;");
   db.close();
 });
