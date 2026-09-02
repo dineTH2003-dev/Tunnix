@@ -1,0 +1,18 @@
+[Unit]
+Description=Tunnix Ingress Gateway Service
+After=network.target tunnix-server.service
+
+[Service]
+Type=simple
+User=tunnix
+WorkingDirectory=/var/www/tunnix/gateway
+ExecStart=/var/www/tunnix/gateway/bin/tunnix-gateway
+Restart=always
+RestartSec=5
+Environment=PUBLIC_ADDR=:8080
+Environment=AGENT_ADDR=:9000
+Environment=SERVER_API_URL=http://127.0.0.1:4310
+EnvironmentFile=/var/www/tunnix/gateway/.env
+
+[Install]
+WantedBy=multi-user.target
