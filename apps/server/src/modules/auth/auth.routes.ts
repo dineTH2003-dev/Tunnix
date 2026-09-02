@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { authMiddleware } from "../../middleware/auth";
+import { rateLimit } from "../../middleware/rate-limit";
 import { toSuccessResponse, ApiError } from "../../core/errors";
 import { verifyTurnstileToken } from "./turnstile.service";
 import {
@@ -12,8 +13,8 @@ import {
 
 export const authRoutes = new Hono();
 
-// POST /v1/auth/request-otp
-authRoutes.post("/request-otp", async (c) => {
+// POST /v1/auth/request-otp (Max 10 per minute per IP)
+authRoutes.post("/request-otp", rateLimit(60_000, 10, "request-otp"), async (c) => {
   const requestId = c.get("requestId" as never) ?? crypto.randomUUID();
   const body = await c.req.json().catch(() => ({}));
 
@@ -32,8 +33,8 @@ authRoutes.post("/request-otp", async (c) => {
   return c.json(toSuccessResponse(result, requestId), 201);
 });
 
-// POST /v1/auth/verify-otp
-authRoutes.post("/verify-otp", async (c) => {
+// POST /v1/auth/verify-otp (Max 15 per minute per IP)
+authRoutes.post("/verify-otp", rateLimit(60_000, 15, "verify-otp"), async (c) => {
   const requestId = c.get("requestId" as never) ?? crypto.randomUUID();
   const body = await c.req.json().catch(() => ({}));
 

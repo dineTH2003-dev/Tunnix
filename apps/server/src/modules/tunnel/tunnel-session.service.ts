@@ -191,12 +191,28 @@ export async function issueTunnelSession(params: {
 }
 
 /**
- * List active tunnel sessions for a user.
+ * List tunnel sessions for a user, optionally filtered by status (e.g. status=active or status=disconnected,revoked).
  */
-export function listUserTunnelSessions(userId: string) {
+export function listUserTunnelSessions(userId: string, filters?: { status?: string }) {
   cleanupStaleSessions();
   const db = getDb();
-  return db
+  const conditions = ["user_id = ?"];
+  const params: Array<string> = [userId];
+
+  if (filters?.status) {
+    const statuses = filters.status.split(",").map((s) => s.trim()).filter(Boolean);
+    if (statuses.length > 0) {
+      conditions.push(`status IN (${statuses.map(() => "?").join(", ")})`);
+      params.push(...statuses);
+    }
+  } else {
+    // Default to active/pending if no filter specified
+    conditions.push("status IN ('pending', 'active')");
+  }
+
+  const where = conditions.join(" AND ");
+
+  const items = db
     .query<
       {
         id: string;
@@ -204,17 +220,49 @@ export function listUserTunnelSessions(userId: string) {
         public_url: string;
         local_port: number;
         status: string;
+        connected_at: string | null;
+        disconnected_at: string | null;
         created_at: string;
         last_heartbeat_at: string | null;
       },
-      [string]
+      string[]
     >(
-      `SELECT id, subdomain, public_url, local_port, status, created_at, last_heartbeat_at
+      `SELECT id, subdomain, public_url, local_port, status, connected_at, disconnected_at, created_at, last_heartbeat_at
        FROM tunnel_sessions
-       WHERE user_id = ? AND status IN ('pending', 'active')
+       WHERE ${where}
        ORDER BY created_at DESC`,
     )
-    .all(userId);
+    .all(...params);
+
+  const total = db
+    .query<{ count: number }, string[]>(`SELECT COUNT(*) AS count FROM tunnel_sessions WHERE ${where}`)
+    .get(...params)?.count ?? 0;
+
+  return { items, total };
+}
+
+/**
+ * Fetch high-level user tunnel metrics for dashboard overview cards.
+ */
+export function getUserTunnelStats(userId: string): {
+  activeTunnels: number;
+  totalSessions: number;
+} {
+  const db = getDb();
+  const activeRow = db
+    .query<{ count: number }, [string]>(
+      "SELECT COUNT(*) AS count FROM tunnel_sessions WHERE user_id = ? AND status IN ('pending', 'active')",
+    )
+    .get(userId);
+
+  const totalRow = db
+    .query<{ count: number }, [string]>("SELECT COUNT(*) AS count FROM tunnel_sessions WHERE user_id = ?")
+    .get(userId);
+
+  return {
+    activeTunnels: activeRow?.count ?? 0,
+    totalSessions: totalRow?.count ?? 0,
+  };
 }
 
 /**
@@ -237,6 +285,71 @@ export function revokeTunnelSession(userId: string, sessionId: string): void {
      SET status = 'revoked', disconnected_at = datetime('now'), updated_at = datetime('now')
      WHERE id = ?`,
   ).run(sessionId);
+}
+
+/**
+ * Health check probe for active tunnel session.
+ */
+export type TunnelHealthCheckResult = {
+  checked: true;
+  offline: boolean;
+  skipped: boolean;
+  status: "active" | "disconnected" | "skipped";
+};
+
+export async function checkTunnelSessionHealth(sessionId: string): Promise<TunnelHealthCheckResult> {
+  const db = getDb();
+  const session = db
+    .query<{ id: string; public_url: string; status: string }, [string]>(
+      "SELECT id, public_url, status FROM tunnel_sessions WHERE id = ? LIMIT 1",
+    )
+    .get(sessionId);
+
+  if (!session) throw new ApiError(404, "NOT_FOUND", "Session not found.");
+
+  if (!session.public_url || session.status === "disconnected" || session.status === "revoked") {
+    return { checked: true, offline: false, skipped: true, status: "skipped" };
+  }
+
+  // Probe public URL
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3000);
+  let offline = false;
+
+  try {
+    const res = await fetch(session.public_url, { method: "HEAD", signal: controller.signal });
+    offline = res.status === 503;
+  } catch {
+    offline = true;
+  } finally {
+    clearTimeout(timeout);
+  }
+
+  if (offline) {
+    db.query(
+      "UPDATE tunnel_sessions SET status = 'disconnected', disconnected_at = datetime('now'), updated_at = datetime('now') WHERE id = ?",
+    ).run(sessionId);
+    return { checked: true, offline: true, skipped: false, status: "disconnected" };
+  }
+
+  return { checked: true, offline: false, skipped: false, status: "active" };
+}
+
+export async function checkTunnelSessionsHealth(sessionIds: string[]) {
+  let checkedCount = 0;
+  let disconnectedCount = 0;
+  let aliveCount = 0;
+  let skippedCount = 0;
+
+  for (const id of sessionIds) {
+    const res = await checkTunnelSessionHealth(id);
+    checkedCount++;
+    if (res.skipped) skippedCount++;
+    else if (res.offline) disconnectedCount++;
+    else aliveCount++;
+  }
+
+  return { checkedCount, disconnectedCount, aliveCount, skippedCount };
 }
 
 /**
