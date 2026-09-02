@@ -1,0 +1,22 @@
+{
+  "name": "tunnix",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/client",
+    "apps/server"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:server": "bun run --cwd apps/server dev",
+    "dev:client": "bun run --cwd apps/client dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "server:test": "bun run --cwd apps/server test",
+    "gateway:build": "cd gateway && ~/go_sdk/go/bin/go build -o bin/tunnix-gateway ./cmd/gateway",
+    "agent:build": "cd agent && ~/go_sdk/go/bin/go build -o bin/tunnix ./cmd/agent"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0"
+  }
+}

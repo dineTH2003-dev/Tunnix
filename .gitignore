@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.turbo/
+*.db
+*.db-shm
+*.db-wal
+.env
+.env.production
+agent/bin/
+gateway/bin/
