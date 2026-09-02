@@ -11,6 +11,8 @@ import { authRoutes } from "./modules/auth/auth.routes";
 import { agentTokenRoutes } from "./modules/agent/agent-token.routes";
 import { agentAuthRoutes } from "./modules/agent/agent-auth.routes";
 import { subdomainRoutes } from "./modules/subdomain/subdomain.routes";
+import { tunnelUserRoutes } from "./modules/tunnel/tunnel-user.routes";
+import { tunnelInternalRoutes } from "./modules/tunnel/tunnel-internal.routes";
 
 export const app = new Hono<{ Variables: AppVariables }>();
 
@@ -46,6 +48,8 @@ app.route("/v1/auth", authRoutes);
 app.route("/v1/agent-tokens", agentTokenRoutes);
 app.route("/v1/auth/agent-login", agentAuthRoutes);
 app.route("/v1/subdomains", subdomainRoutes);
+app.route("/v1/tunnel/sessions", tunnelUserRoutes);
+app.route("/v1/internal/tunnel", tunnelInternalRoutes);
 
 // NOTE: Auth, tunnel, agent, and admin routes will be mounted here in Phase 2+
 
