@@ -7,6 +7,7 @@ import { logWarn, logError } from "./core/logging";
 import type { AppVariables } from "./core/types";
 import { requestLogger } from "./middleware/request-logger";
 import { healthRoutes } from "./modules/health/health.routes";
+import { authRoutes } from "./modules/auth/auth.routes";
 
 export const app = new Hono<{ Variables: AppVariables }>();
 
@@ -38,6 +39,7 @@ app.get("/", (c) => {
 });
 
 app.route("/health", healthRoutes);
+app.route("/v1/auth", authRoutes);
 
 // NOTE: Auth, tunnel, agent, and admin routes will be mounted here in Phase 2+
 
@@ -51,14 +53,25 @@ app.notFound((c) => {
 });
 
 app.onError((err, c) => {
-  const requestId = c.get("requestId") ?? "unknown";
+  const requestId = c.get("requestId" as never) ?? "unknown";
   const normalized = normalizeError(err);
-  logError("http", "Unhandled error", {
-    requestId,
-    path: c.req.path,
-    code: normalized.code,
-    message: normalized.message,
-    stack: err instanceof Error ? err.stack : undefined,
-  });
+
+  if (normalized.status < 500) {
+    logWarn("http", `Client error (${normalized.status})`, {
+      requestId,
+      path: c.req.path,
+      code: normalized.code,
+      message: normalized.message,
+    });
+  } else {
+    logError("http", "Unhandled server error", {
+      requestId,
+      path: c.req.path,
+      code: normalized.code,
+      message: normalized.message,
+      stack: err instanceof Error ? err.stack : undefined,
+    });
+  }
+
   return c.json(toErrorResponse(normalized, requestId), normalized.status);
 });
