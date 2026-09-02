@@ -6,7 +6,7 @@ describe("Tunnix Platform Production Smoke Tests", () => {
   beforeAll(() => {
     try {
       const db = getDb();
-      db.run("DELETE FROM audit_logs WHERE user_email = 'smoketest@tunnix.local'");
+      db.run("DELETE FROM audit_logs WHERE actor_user_id IN (SELECT id FROM users WHERE email = 'smoketest@tunnix.local')");
       db.run("DELETE FROM otp_challenges WHERE email = 'smoketest@tunnix.local'");
       db.run("DELETE FROM users WHERE email = 'smoketest@tunnix.local'");
     } catch {
@@ -17,7 +17,7 @@ describe("Tunnix Platform Production Smoke Tests", () => {
   afterAll(() => {
     try {
       const db = getDb();
-      db.run("DELETE FROM audit_logs WHERE user_email = 'smoketest@tunnix.local'");
+      db.run("DELETE FROM audit_logs WHERE actor_user_id IN (SELECT id FROM users WHERE email = 'smoketest@tunnix.local')");
       db.run("DELETE FROM otp_challenges WHERE email = 'smoketest@tunnix.local'");
       db.run("DELETE FROM users WHERE email = 'smoketest@tunnix.local'");
     } catch {

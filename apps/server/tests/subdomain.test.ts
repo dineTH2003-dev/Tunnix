@@ -8,12 +8,16 @@ let userToken = "";
 
 beforeEach(async () => {
   const db = openDb();
+  db.exec("PRAGMA foreign_keys = OFF;");
+  db.exec("DELETE FROM audit_logs;");
+  db.exec("DELETE FROM allowed_email_domains;");
   db.exec("DELETE FROM tunnel_sessions;");
   db.exec("DELETE FROM reserved_subdomains;");
   db.exec("DELETE FROM blocked_subdomains;");
   db.exec("DELETE FROM agent_tokens;");
   db.exec("DELETE FROM sessions;");
   db.exec("DELETE FROM users;");
+  db.exec("PRAGMA foreign_keys = ON;");
   db.close();
 
   userId = crypto.randomUUID();

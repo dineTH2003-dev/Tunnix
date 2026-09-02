@@ -1,14 +1,15 @@
-// Structured logger — outputs JSON in production, readable format in dev.
+import { redactForLogs } from "./redaction";
 
 type LogLevel = "info" | "warn" | "error" | "debug";
 
 function log(level: LogLevel, domain: string, message: string, meta?: Record<string, unknown>): void {
+  const redactedMeta = meta ? (redactForLogs(meta) as Record<string, unknown>) : {};
   const entry = {
     ts: new Date().toISOString(),
     level,
     domain,
     msg: message,
-    ...meta,
+    ...redactedMeta,
   };
   const line = JSON.stringify(entry);
   if (level === "error") {

@@ -5,6 +5,10 @@ import { openDb } from "../src/core/db/db";
 beforeEach(() => {
   // Clean up database tables for test isolation
   const db = openDb();
+  db.exec("PRAGMA foreign_keys = OFF;");
+  db.exec("DELETE FROM audit_logs;");
+  db.exec("DELETE FROM allowed_email_domains;");
+  db.exec("DELETE FROM blocked_subdomains;");
   db.exec("DELETE FROM tunnel_sessions;");
   db.exec("DELETE FROM reserved_subdomains;");
   db.exec("DELETE FROM agent_tokens;");
@@ -12,6 +16,7 @@ beforeEach(() => {
   db.exec("DELETE FROM otp_challenges;");
   db.exec("DELETE FROM otp_request_events;");
   db.exec("DELETE FROM users;");
+  db.exec("PRAGMA foreign_keys = ON;");
   db.close();
 });
 
