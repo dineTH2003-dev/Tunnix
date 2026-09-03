@@ -32,8 +32,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const profile = await apiRequest<UserProfile>("/v1/auth/me");
       setUser(profile);
     } catch {
-      setUser(null);
-      setAccessToken(null);
+      // Access token might be expired; attempt silent refresh
+      try {
+        const res = await apiRequest<{ accessToken: string; user: UserProfile }>("/v1/auth/refresh", {
+          method: "POST",
+        });
+        setAccessToken(res.accessToken);
+        const profile = await apiRequest<UserProfile>("/v1/auth/me");
+        setUser(profile);
+      } catch {
+        setUser(null);
+        setAccessToken(null);
+      }
     } finally {
       setLoading(false);
     }

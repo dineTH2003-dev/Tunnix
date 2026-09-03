@@ -99,18 +99,43 @@ authRoutes.post("/logout", authMiddleware, async (c) => {
   });
 
   return c.json(toSuccessResponse({ loggedOut: true }, requestId), 200);
-});
-
-// GET /v1/auth/me
+});// GET /v1/auth/me (Fetch latest user profile from database)
 authRoutes.get("/me", authMiddleware, async (c) => {
   const requestId = c.get("requestId" as never) ?? crypto.randomUUID();
+  const userId = c.get("userId" as never) as string;
+
+  const db = (await import("../../core/db/db")).getDb();
+  const user = db
+    .query<
+      {
+        id: string;
+        email: string;
+        role: "admin" | "user";
+        status: "pending" | "active" | "suspended";
+        name: string | null;
+        max_tunnels: number;
+        max_subdomains: number;
+        created_at: string;
+      },
+      [string]
+    >("SELECT id, email, role, status, name, max_tunnels, max_subdomains, created_at FROM users WHERE id = ?")
+    .get(userId);
+
+  if (!user) {
+    throw new ApiError(404, "USER_NOT_FOUND", "User profile not found.");
+  }
+
   return c.json(
     toSuccessResponse(
       {
-        id: c.get("userId" as never),
-        email: c.get("userEmail" as never),
-        role: c.get("userRole" as never),
-        status: c.get("userStatus" as never),
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        name: user.name,
+        maxTunnels: user.max_tunnels,
+        maxSubdomains: user.max_subdomains,
+        createdAt: user.created_at,
       },
       requestId,
     ),
