@@ -19,10 +19,12 @@ PLATFORMS=(
   "windows/amd64/tunnix-windows-amd64.exe"
 )
 
+GO_BIN="$(command -v go || echo "/home/dineth/go_sdk/go/bin/go")"
+
 for target in "${PLATFORMS[@]}"; do
   IFS="/" read -r GOOS GOARCH OUTNAME <<< "$target"
   echo "  --> Compiling $GOOS/$GOARCH..."
-  GOOS=$GOOS GOARCH=$GOARCH go build -ldflags="-s -w" -o "$DIST_DIR/$OUTNAME" ./cmd/agent
+  GOOS=$GOOS GOARCH=$GOARCH "$GO_BIN" build -ldflags="-s -w" -o "$DIST_DIR/$OUTNAME" ./cmd/agent
 done
 
 echo "✅ All agent binaries built successfully in $DIST_DIR:"
