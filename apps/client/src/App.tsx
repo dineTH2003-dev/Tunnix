@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./store/authContext";
 import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/Layout";
+import { LandingPage } from "./pages/LandingPage";
 import { AuthPage } from "./pages/AuthPage";
 import { DashboardHome } from "./pages/DashboardHome";
 import { AgentTokensPage } from "./pages/AgentTokensPage";
@@ -23,6 +24,9 @@ export const App: React.FC = () => {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          {/* Public Marketing Landing Page */}
+          <Route path="/" element={<LandingPage />} />
+
           {/* Public Auth Route */}
           <Route path="/auth" element={<AuthPage />} />
 
@@ -48,7 +52,7 @@ export const App: React.FC = () => {
           </Route>
 
           {/* Fallback */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

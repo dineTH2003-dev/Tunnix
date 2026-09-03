@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Zap, Mail, KeyRound, ArrowRight, ShieldCheck } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Zap, Mail, KeyRound, ArrowRight, ShieldCheck, ArrowLeft } from "lucide-react";
 import { useAuth } from "../store/authContext";
 
 export const AuthPage: React.FC = () => {
@@ -57,9 +57,27 @@ export const AuthPage: React.FC = () => {
         backgroundColor: "#07090e",
         padding: "1.5rem",
         backgroundImage: "radial-gradient(circle at 50% 30%, rgba(99,102,241,0.15) 0%, transparent 60%)",
+        position: "relative",
       }}
     >
       <div style={{ width: "100%", maxWidth: 420 }}>
+        {/* Back to Home Link */}
+        <div style={{ marginBottom: "1.25rem" }}>
+          <Link
+            to="/"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              color: "#94a3b8",
+              textDecoration: "none",
+              fontSize: "0.85rem",
+              fontWeight: 500,
+            }}
+          >
+            <ArrowLeft size={16} /> Back to Home
+          </Link>
+        </div>
         {/* Brand */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <div
