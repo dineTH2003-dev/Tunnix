@@ -28,7 +28,7 @@ cp apps/server/.env.example apps/server/.env
 ### 2. Run Database Migrations
 ```bash
 cd /var/www/tunnix/apps/server
-bun run src/scripts/migrate.ts
+bun run scripts/migrate.ts
 ```
 
 ### 3. Build Web Dashboard & Agent Binaries
