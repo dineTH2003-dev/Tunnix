@@ -7,5 +7,7 @@ dist/
 .env
 .env.production
 agent/bin/
+agent/agent
 gateway/bin/
+gateway/gateway
 *.tsbuildinfo
