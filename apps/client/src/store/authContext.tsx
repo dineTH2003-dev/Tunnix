@@ -40,11 +40,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    if (getAccessToken()) {
-      fetchCurrentUser();
-    } else {
-      setLoading(false);
-    }
+    const initAuth = async () => {
+      if (getAccessToken()) {
+        await fetchCurrentUser();
+      } else {
+        // Attempt silent cookie refresh for persisted session across page reloads
+        try {
+          const res = await apiRequest<{ accessToken: string; user: UserProfile }>("/v1/auth/refresh", {
+            method: "POST",
+          });
+          setAccessToken(res.accessToken);
+          setUser(res.user);
+        } catch {
+          setUser(null);
+          setAccessToken(null);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    initAuth();
   }, []);
 
   const requestOtp = async (email: string, turnstileToken: string = "dev-bypass") => {
