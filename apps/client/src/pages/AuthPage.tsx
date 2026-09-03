@@ -165,6 +165,9 @@ export const AuthPage: React.FC = () => {
                 <p style={{ fontSize: "0.75rem", color: "#64748b", marginTop: 6 }}>
                   We sent a 6-digit code to <strong>{email}</strong>
                 </p>
+                <p style={{ fontSize: "0.75rem", color: "#38bdf8", marginTop: 4 }}>
+                  💡 Local Dev Hint: Enter <strong>000000</strong> or <strong>123456</strong> to sign in instantly.
+                </p>
               </div>
 
               <button

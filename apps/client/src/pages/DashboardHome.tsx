@@ -45,7 +45,7 @@ export const DashboardHome: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: "1.75rem", fontWeight: 700, marginTop: "0.5rem" }}>
-            {activeTunnels.length} <span style={{ fontSize: "0.9rem", color: "#64748b", fontWeight: 400 }}>/ {user?.maxTunnels} limit</span>
+            {activeTunnels.length} <span style={{ fontSize: "0.9rem", color: "#64748b", fontWeight: 400 }}>/ {user?.maxTunnels ?? 2} limit</span>
           </div>
         </div>
 
@@ -57,7 +57,7 @@ export const DashboardHome: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: "1.75rem", fontWeight: 700, marginTop: "0.5rem" }}>
-            {subdomainsCount} <span style={{ fontSize: "0.9rem", color: "#64748b", fontWeight: 400 }}>/ {user?.maxSubdomains} limit</span>
+            {subdomainsCount} <span style={{ fontSize: "0.9rem", color: "#64748b", fontWeight: 400 }}>/ {user?.maxSubdomains ?? 2} limit</span>
           </div>
         </div>
 
