@@ -7,8 +7,9 @@ export const AdminAuditLogsPage: React.FC = () => {
 
   const fetchLogs = async () => {
     try {
-      const data = await apiRequest<any[]>("/v1/admin/audit-logs");
-      setLogs(data);
+      const data = await apiRequest<any>("/v1/admin/audit-logs");
+      const items = Array.isArray(data) ? data : data?.items || [];
+      setLogs(items);
     } catch {
       setLogs([]);
     }

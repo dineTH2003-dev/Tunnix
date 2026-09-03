@@ -10,13 +10,16 @@ export const AdminSubdomainsPage: React.FC = () => {
   const fetchData = async () => {
     try {
       const [res, block] = await Promise.all([
-        apiRequest<any[]>("/v1/admin/subdomains/reserved").catch(() => []),
-        apiRequest<any[]>("/v1/admin/subdomains/blocked").catch(() => []),
+        apiRequest<any>("/v1/admin/subdomains/reserved").catch(() => []),
+        apiRequest<any>("/v1/admin/subdomains/blocked").catch(() => []),
       ]);
-      setReservedSubdomains(res);
-      setBlockedSubdomains(block);
+      const resItems = Array.isArray(res) ? res : res?.items || [];
+      const blockItems = Array.isArray(block) ? block : block?.items || [];
+      setReservedSubdomains(resItems);
+      setBlockedSubdomains(blockItems);
     } catch {
-      // Ignore
+      setReservedSubdomains([]);
+      setBlockedSubdomains([]);
     }
   };
 

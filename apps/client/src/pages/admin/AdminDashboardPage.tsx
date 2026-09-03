@@ -12,15 +12,18 @@ export const AdminDashboardPage: React.FC = () => {
 
   useEffect(() => {
     Promise.all([
-      apiRequest<any[]>("/v1/admin/users").catch(() => []),
-      apiRequest<any[]>("/v1/admin/tunnels/active").catch(() => []),
-      apiRequest<any[]>("/v1/admin/subdomains/reserved").catch(() => []),
+      apiRequest<any>("/v1/admin/users").catch(() => []),
+      apiRequest<any>("/v1/admin/tunnels/active").catch(() => []),
+      apiRequest<any>("/v1/admin/subdomains/reserved").catch(() => []),
     ]).then(([users, tunnels, subdomains]) => {
+      const usersArr = Array.isArray(users) ? users : users?.items || [];
+      const tunnelsArr = Array.isArray(tunnels) ? tunnels : tunnels?.items || [];
+      const subdomainsArr = Array.isArray(subdomains) ? subdomains : subdomains?.items || [];
       setStats({
-        usersCount: users.length,
-        pendingUsersCount: users.filter((u) => u.status === "pending").length,
-        activeTunnelsCount: tunnels.length,
-        subdomainsCount: subdomains.length,
+        usersCount: usersArr.length,
+        pendingUsersCount: usersArr.filter((u: any) => u?.status === "pending").length,
+        activeTunnelsCount: tunnelsArr.length,
+        subdomainsCount: subdomainsArr.length,
       });
     });
   }, []);

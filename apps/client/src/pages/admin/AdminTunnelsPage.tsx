@@ -7,8 +7,9 @@ export const AdminTunnelsPage: React.FC = () => {
 
   const fetchActiveTunnels = async () => {
     try {
-      const data = await apiRequest<any[]>("/v1/admin/tunnels/active");
-      setActiveTunnels(data);
+      const data = await apiRequest<any>("/v1/admin/tunnels/active");
+      const items = Array.isArray(data) ? data : data?.items || [];
+      setActiveTunnels(items);
     } catch {
       setActiveTunnels([]);
     }

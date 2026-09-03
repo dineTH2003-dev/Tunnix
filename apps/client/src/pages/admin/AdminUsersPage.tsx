@@ -19,8 +19,9 @@ export const AdminUsersPage: React.FC = () => {
 
   const fetchUsers = async () => {
     try {
-      const data = await apiRequest<UserRecord[]>("/v1/admin/users");
-      setUsers(data);
+      const data = await apiRequest<any>("/v1/admin/users");
+      const items = Array.isArray(data) ? data : data?.items || [];
+      setUsers(items);
     } catch {
       setUsers([]);
     }

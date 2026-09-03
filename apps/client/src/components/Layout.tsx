@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "../store/authContext";
 
+import { ErrorBoundary } from "./ErrorBoundary";
+
 export const Layout: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -183,11 +185,11 @@ export const Layout: React.FC = () => {
                   color: "#f8fafc",
                 }}
               >
-                {user?.email.substring(0, 2).toUpperCase()}
+                {user?.email ? user.email.substring(0, 2).toUpperCase() : "US"}
               </div>
               <div style={{ overflow: "hidden" }}>
                 <div style={{ fontSize: "0.85rem", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {user?.email}
+                  {user?.email || "User"}
                 </div>
                 <div style={{ display: "flex", gap: "0.25rem", marginTop: 2 }}>
                   {user?.role === "admin" ? (
@@ -218,7 +220,9 @@ export const Layout: React.FC = () => {
 
       {/* Main Content Area */}
       <main style={{ flex: 1, marginLeft: 260, minHeight: "100vh", backgroundColor: "#07090e", padding: "2rem" }}>
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
     </div>
   );
