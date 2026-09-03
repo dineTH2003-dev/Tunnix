@@ -48,7 +48,9 @@ export const AdminAuditLogsPage: React.FC = () => {
                   <tr key={log.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
                     <td style={{ padding: "0.6rem 0.8rem", color: "#94a3b8" }}>{new Date(log.created_at).toLocaleString()}</td>
                     <td style={{ padding: "0.6rem 0.8rem" }}>
-                      <span className="badge badge-active" style={{ fontSize: "0.7rem" }}>{log.event_type}</span>
+                      <span className="badge badge-active" style={{ fontSize: "0.75rem" }}>
+                        {log.action || log.event_type || "system_event"}
+                      </span>
                     </td>
                     <td style={{ padding: "0.6rem 0.8rem", fontWeight: 500 }}>{log.user_email || log.user_id || "System"}</td>
                     <td style={{ padding: "0.6rem 0.8rem", color: "#64748b" }}>{log.ip_address || "127.0.0.1"}</td>
