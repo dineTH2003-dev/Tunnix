@@ -22,8 +22,9 @@ export const AgentTokensPage: React.FC = () => {
 
   const fetchTokens = async () => {
     try {
-      const data = await apiRequest<AgentToken[]>("/v1/agent-tokens");
-      setTokens(data);
+      const data = await apiRequest<any>("/v1/agent-tokens");
+      const items = Array.isArray(data) ? data : data?.items || [];
+      setTokens(items);
     } catch (err: any) {
       setError(err.message || "Failed to load agent tokens.");
     }

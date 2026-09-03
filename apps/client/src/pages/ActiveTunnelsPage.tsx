@@ -19,8 +19,9 @@ export const ActiveTunnelsPage: React.FC = () => {
   const fetchTunnels = async () => {
     setLoading(true);
     try {
-      const data = await apiRequest<TunnelSession[]>("/v1/tunnel/sessions");
-      setTunnels(data);
+      const data = await apiRequest<any>("/v1/tunnel/sessions");
+      const items = Array.isArray(data) ? data : data?.items || [];
+      setTunnels(items);
     } catch {
       setTunnels([]);
     } finally {

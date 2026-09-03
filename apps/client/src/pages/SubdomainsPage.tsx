@@ -18,8 +18,9 @@ export const SubdomainsPage: React.FC = () => {
 
   const fetchSubdomains = async () => {
     try {
-      const data = await apiRequest<Subdomain[]>("/v1/subdomains");
-      setSubdomains(data);
+      const data = await apiRequest<any>("/v1/subdomains");
+      const items = Array.isArray(data) ? data : data?.items || [];
+      setSubdomains(items);
     } catch (err: any) {
       setError(err.message || "Failed to load subdomains.");
     }

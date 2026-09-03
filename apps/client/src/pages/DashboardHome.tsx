@@ -12,9 +12,26 @@ export const DashboardHome: React.FC = () => {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    apiRequest<any[]>("/v1/agent-tokens").then((res) => setTokensCount(res.length)).catch(() => {});
-    apiRequest<any[]>("/v1/subdomains").then((res) => setSubdomainsCount(res.length)).catch(() => {});
-    apiRequest<any[]>("/v1/tunnel/sessions").then((res) => setActiveTunnels(res)).catch(() => {});
+    apiRequest<any>("/v1/agent-tokens")
+      .then((res) => {
+        const items = Array.isArray(res) ? res : res?.items || [];
+        setTokensCount(items.length);
+      })
+      .catch(() => setTokensCount(0));
+
+    apiRequest<any>("/v1/subdomains")
+      .then((res) => {
+        const items = Array.isArray(res) ? res : res?.items || [];
+        setSubdomainsCount(items.length);
+      })
+      .catch(() => setSubdomainsCount(0));
+
+    apiRequest<any>("/v1/tunnel/sessions")
+      .then((res) => {
+        const items = Array.isArray(res) ? res : res?.items || [];
+        setActiveTunnels(items);
+      })
+      .catch(() => setActiveTunnels([]));
   }, []);
 
   const copyQuickStart = () => {
