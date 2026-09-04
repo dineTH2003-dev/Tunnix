@@ -226,14 +226,6 @@ export const LandingPage: React.FC = () => {
                   bash — tunnix cli
                 </span>
               </div>
-              <button
-                onClick={copyHeroCmd}
-                className="btn-secondary"
-                style={{ padding: "0.25rem 0.6rem", fontSize: "0.75rem" }}
-              >
-                {copiedCmd ? <Check size={14} color="#4ade80" /> : <Copy size={14} />}
-                {copiedCmd ? "Copied!" : "Copy"}
-              </button>
             </div>
 
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
