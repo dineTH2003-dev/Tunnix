@@ -20,6 +20,71 @@ const PLATFORM_MAP: Record<string, { filename: string; contentType: string; labe
   "mac-intel": { filename: "tunnix-darwin-amd64", contentType: "application/octet-stream", label: "macOS (Intel)", platformKey: "mac-intel" },
 };
 
+/** Serve automated PowerShell installer script for Windows */
+downloadRoutes.get("/install.ps1", (c) => {
+  const host = c.req.header("host") || "localhost:4310";
+  const protocol = c.req.header("x-forwarded-proto") || "http";
+  const baseUrl = `${protocol}://${host}`;
+
+  const psScript = `$ErrorActionPreference = 'Stop'
+$installDir = "$env:LOCALAPPDATA\\Programs\\Tunnix"
+if (!(Test-Path $installDir)) { New-Item -ItemType Directory -Path $installDir -Force | Out-Null }
+$exePath = "$installDir\\tunnix.exe"
+Write-Host "⚡ Downloading Tunnix Agent CLI for Windows..." -ForegroundColor Cyan
+Invoke-WebRequest -Uri "${baseUrl}/v1/download/windows" -OutFile $exePath
+$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+if ($userPath -notlike "*$installDir*") {
+    [Environment]::SetEnvironmentVariable("Path", "$userPath;$installDir", "User")
+    $env:Path = "$env:Path;$installDir"
+}
+Write-Host "✅ Tunnix CLI successfully installed!" -ForegroundColor Green
+Write-Host "👉 Run 'tunnix login <agent-token>' in your terminal to authenticate." -ForegroundColor Yellow
+`;
+
+  return c.text(psScript, 200, {
+    "Content-Type": "text/plain; charset=utf-8",
+  });
+});
+
+/** Serve automated Shell installer script for Linux & macOS */
+downloadRoutes.get("/install.sh", (c) => {
+  const host = c.req.header("host") || "localhost:4310";
+  const protocol = c.req.header("x-forwarded-proto") || "http";
+  const baseUrl = `${protocol}://${host}`;
+
+  const shScript = `#!/bin/sh
+set -e
+echo "⚡ Downloading Tunnix Agent CLI..."
+OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
+PLATFORM="linux"
+if [ "$OS" = "darwin" ]; then
+    PLATFORM="mac"
+fi
+
+if [ "$(id -u)" -eq 0 ]; then
+    curl -fsSL "${baseUrl}/v1/download/$PLATFORM" -o /usr/local/bin/tunnix
+    chmod +x /usr/local/bin/tunnix
+    echo "✅ Tunnix CLI installed to /usr/local/bin/tunnix"
+else
+    if command -v sudo >/dev/null 2>&1; then
+        sudo curl -fsSL "${baseUrl}/v1/download/$PLATFORM" -o /usr/local/bin/tunnix
+        sudo chmod +x /usr/local/bin/tunnix
+        echo "✅ Tunnix CLI installed to /usr/local/bin/tunnix"
+    else
+        mkdir -p "$HOME/.tunnix/bin"
+        curl -fsSL "${baseUrl}/v1/download/$PLATFORM" -o "$HOME/.tunnix/bin/tunnix"
+        chmod +x "$HOME/.tunnix/bin/tunnix"
+        echo "✅ Tunnix CLI installed to $HOME/.tunnix/bin/tunnix"
+    fi
+fi
+echo "👉 Run 'tunnix login <agent-token>' to get started."
+`;
+
+  return c.text(shScript, 200, {
+    "Content-Type": "text/plain; charset=utf-8",
+  });
+});
+
 /** Get platforms available for download */
 downloadRoutes.get("/platforms", async (c) => {
   const requestId = c.get("requestId" as never) ?? crypto.randomUUID();
@@ -72,7 +137,7 @@ downloadRoutes.get("/:platform", async (c) => {
   const config = PLATFORM_MAP[platform];
 
   if (!config) {
-    throw ApiError.badRequest(`Unsupported platform '${platform}'. Available: ${Object.keys(PLATFORM_MAP).join(", ")}`);
+    throw new ApiError(400, "BAD_REQUEST", `Unsupported platform '${platform}'. Available: ${Object.keys(PLATFORM_MAP).join(", ")}`);
   }
 
   const authHeader = c.req.header("Authorization");
@@ -111,7 +176,7 @@ downloadRoutes.get("/:platform", async (c) => {
   }
 
   if (!existsSync(filePath)) {
-    throw ApiError.notFound(`Binary for platform '${platform}' not compiled on server.`);
+    throw new ApiError(404, "NOT_FOUND", `Binary for platform '${platform}' not compiled on server.`);
   }
 
   const fileBuffer = readFileSync(filePath);
