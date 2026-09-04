@@ -108,9 +108,6 @@ export const LandingPage: React.FC = () => {
             <a href="#how-it-works" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.9rem", fontWeight: 500 }}>
               How It Works
             </a>
-            <a href="#cli" style={{ color: "#94a3b8", textDecoration: "none", fontSize: "0.9rem", fontWeight: 500 }}>
-              Download CLI
-            </a>
           </nav>
 
           {/* Action Button */}
@@ -199,20 +196,11 @@ export const LandingPage: React.FC = () => {
               onClick={() => navigate(user ? "/dashboard" : "/auth")}
               className="btn-primary"
               id="hero-cta-start"
-              style={{ padding: "0.75rem 1.75rem", fontSize: "1rem", borderRadius: 10 }}
+              style={{ padding: "0.75rem 2rem", fontSize: "1rem", borderRadius: 10 }}
             >
-              {user ? "Open Workspace" : "Get Started Free"}
+              {user ? "Go to Dashboard" : "Sign In / Get Started Free"}
               <ArrowRight size={18} />
             </button>
-            <a
-              href="#cli"
-              className="btn-secondary"
-              id="hero-cta-cli"
-              style={{ padding: "0.75rem 1.75rem", fontSize: "1rem", borderRadius: 10, textDecoration: "none" }}
-            >
-              <Download size={18} />
-              Download Agent CLI
-            </a>
           </div>
 
           {/* Terminal Command Widget */}
@@ -467,111 +455,6 @@ export const LandingPage: React.FC = () => {
                   tunnix http 3000
                 </code>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Download CLI Section */}
-      <section id="cli" style={{ padding: "5rem 1.5rem", maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
-          <h2 style={{ fontSize: "2.25rem", fontWeight: 700 }}>Download Agent CLI</h2>
-          <p style={{ color: "#94a3b8", marginTop: "0.5rem" }}>
-            Choose your preferred installation method: Direct executable binary download or automated terminal script.
-          </p>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem" }}>
-          {/* Windows */}
-          <div className="glass-card" style={{ padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <Cpu size={24} color="#c084fc" />
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Windows (x64)</h3>
-              </div>
-              <span className="badge badge-active" style={{ fontSize: "0.7rem" }}>tunnix.exe</span>
-            </div>
-
-            <a
-              href="http://localhost:4310/v1/download/windows"
-              download="tunnix-windows-amd64.exe"
-              className="btn-primary"
-              id="landing-download-win-exe"
-              style={{ width: "100%", justifyContent: "center", padding: "0.55rem", fontSize: "0.85rem", marginBottom: "1rem", textDecoration: "none", background: "linear-gradient(135deg, #c084fc 0%, #6366f1 100%)" }}
-            >
-              <Download size={16} /> Download tunnix.exe (8.0 MB)
-            </a>
-
-            <div style={{ fontSize: "0.75rem", color: "#64748b", marginBottom: "0.4rem" }}>Or run PowerShell installer script:</div>
-            <div style={{ display: "flex", gap: "0.5rem", backgroundColor: "rgba(15,23,42,0.9)", padding: "0.55rem 0.75rem", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)" }}>
-              <code className="font-mono" style={{ fontSize: "0.72rem", color: "#c084fc", flex: 1, overflowX: "auto", whiteSpace: "nowrap" }}>
-                iwr -useb http://localhost:4310/v1/download/install.ps1 | iex
-              </code>
-              <button onClick={() => copyOsCmd("iwr -useb http://localhost:4310/v1/download/install.ps1 | iex", "win")} className="btn-secondary" style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}>
-                {copiedOs === "win" ? <Check size={14} color="#4ade80" /> : <Copy size={14} />}
-              </button>
-            </div>
-          </div>
-
-          {/* Linux */}
-          <div className="glass-card" style={{ padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <Cpu size={24} color="#38bdf8" />
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Linux (x86_64 / ARM64)</h3>
-              </div>
-              <span className="badge badge-active" style={{ fontSize: "0.7rem" }}>tunnix</span>
-            </div>
-
-            <a
-              href="http://localhost:4310/v1/download/linux"
-              download="tunnix-linux-amd64"
-              className="btn-primary"
-              id="landing-download-linux-bin"
-              style={{ width: "100%", justifyContent: "center", padding: "0.55rem", fontSize: "0.85rem", marginBottom: "1rem", textDecoration: "none" }}
-            >
-              <Download size={16} /> Download Linux Binary (8.0 MB)
-            </a>
-
-            <div style={{ fontSize: "0.75rem", color: "#64748b", marginBottom: "0.4rem" }}>Or run shell installer script:</div>
-            <div style={{ display: "flex", gap: "0.5rem", backgroundColor: "rgba(15,23,42,0.9)", padding: "0.55rem 0.75rem", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)" }}>
-              <code className="font-mono" style={{ fontSize: "0.72rem", color: "#38bdf8", flex: 1, overflowX: "auto", whiteSpace: "nowrap" }}>
-                curl -fsSL http://localhost:4310/v1/download/install.sh | sh
-              </code>
-              <button onClick={() => copyOsCmd("curl -fsSL http://localhost:4310/v1/download/install.sh | sh", "linux")} className="btn-secondary" style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}>
-                {copiedOs === "linux" ? <Check size={14} color="#4ade80" /> : <Copy size={14} />}
-              </button>
-            </div>
-          </div>
-
-          {/* macOS */}
-          <div className="glass-card" style={{ padding: "1.5rem" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <Cpu size={24} color="#818cf8" />
-                <h3 style={{ fontSize: "1.1rem", fontWeight: 600 }}>macOS (Intel / Apple Silicon)</h3>
-              </div>
-              <span className="badge badge-active" style={{ fontSize: "0.7rem" }}>tunnix</span>
-            </div>
-
-            <a
-              href="http://localhost:4310/v1/download/mac"
-              download="tunnix-darwin-arm64"
-              className="btn-primary"
-              id="landing-download-mac-bin"
-              style={{ width: "100%", justifyContent: "center", padding: "0.55rem", fontSize: "0.85rem", marginBottom: "1rem", textDecoration: "none", backgroundColor: "#6366f1" }}
-            >
-              <Download size={16} /> Download macOS Binary (7.6 MB)
-            </a>
-
-            <div style={{ fontSize: "0.75rem", color: "#64748b", marginBottom: "0.4rem" }}>Or run shell installer script:</div>
-            <div style={{ display: "flex", gap: "0.5rem", backgroundColor: "rgba(15,23,42,0.9)", padding: "0.55rem 0.75rem", borderRadius: 8, border: "1px solid rgba(255,255,255,0.06)" }}>
-              <code className="font-mono" style={{ fontSize: "0.72rem", color: "#818cf8", flex: 1, overflowX: "auto", whiteSpace: "nowrap" }}>
-                curl -fsSL http://localhost:4310/v1/download/install.sh | sh
-              </code>
-              <button onClick={() => copyOsCmd("curl -fsSL http://localhost:4310/v1/download/install.sh | sh", "mac")} className="btn-secondary" style={{ padding: "0.25rem 0.5rem", fontSize: "0.75rem" }}>
-                {copiedOs === "mac" ? <Check size={14} color="#4ade80" /> : <Copy size={14} />}
-              </button>
             </div>
           </div>
         </div>
