@@ -26,13 +26,23 @@ export const DownloadPage: React.FC = () => {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
         {/* Linux Card */}
         <div className="glass-card" style={{ padding: "1.5rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
             <Cpu size={24} color="#38bdf8" />
             <h2 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Linux (x86_64 / ARM64)</h2>
           </div>
           <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "1rem" }}>
-            Install via automated shell script:
+            Download standalone binary or run automated installer:
           </p>
+
+          <a
+            href="http://localhost:4310/v1/download/linux"
+            download="tunnix-linux-amd64"
+            className="btn-primary"
+            style={{ width: "100%", justifyContent: "center", padding: "0.6rem", fontSize: "0.85rem", marginBottom: "1rem", textDecoration: "none" }}
+          >
+            <Download size={16} /> Download Linux Binary
+          </a>
+
           <div style={{ display: "flex", gap: "0.5rem", backgroundColor: "rgba(15,23,42,0.9)", padding: "0.65rem 0.85rem", borderRadius: 8 }}>
             <code className="font-mono" style={{ fontSize: "0.8rem", color: "#38bdf8", flex: 1, overflowX: "auto" }}>
               {linuxCmd}
@@ -45,13 +55,23 @@ export const DownloadPage: React.FC = () => {
 
         {/* macOS Card */}
         <div className="glass-card" style={{ padding: "1.5rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
             <Cpu size={24} color="#818cf8" />
             <h2 style={{ fontSize: "1.1rem", fontWeight: 600 }}>macOS (Intel / Apple Silicon)</h2>
           </div>
           <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "1rem" }}>
-            Install via Homebrew tap:
+            Download standalone binary or install via Homebrew:
           </p>
+
+          <a
+            href="http://localhost:4310/v1/download/mac"
+            download="tunnix-darwin-arm64"
+            className="btn-primary"
+            style={{ width: "100%", justifyContent: "center", padding: "0.6rem", fontSize: "0.85rem", marginBottom: "1rem", textDecoration: "none" }}
+          >
+            <Download size={16} /> Download macOS Binary
+          </a>
+
           <div style={{ display: "flex", gap: "0.5rem", backgroundColor: "rgba(15,23,42,0.9)", padding: "0.65rem 0.85rem", borderRadius: 8 }}>
             <code className="font-mono" style={{ fontSize: "0.8rem", color: "#818cf8", flex: 1, overflowX: "auto" }}>
               {macCmd}
@@ -64,13 +84,24 @@ export const DownloadPage: React.FC = () => {
 
         {/* Windows Card */}
         <div className="glass-card" style={{ padding: "1.5rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
             <Cpu size={24} color="#c084fc" />
-            <h2 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Windows (PowerShell)</h2>
+            <h2 style={{ fontSize: "1.1rem", fontWeight: 600 }}>Windows (x64)</h2>
           </div>
           <p style={{ color: "#94a3b8", fontSize: "0.85rem", marginBottom: "1rem" }}>
-            Install via PowerShell script:
+            Download `.exe` executable file or run PowerShell installer:
           </p>
+
+          <a
+            href="http://localhost:4310/v1/download/windows"
+            download="tunnix-windows-amd64.exe"
+            className="btn-primary"
+            id="btn-download-win-exe"
+            style={{ width: "100%", justifyContent: "center", padding: "0.6rem", fontSize: "0.85rem", marginBottom: "1rem", textDecoration: "none", background: "linear-gradient(135deg, #c084fc 0%, #6366f1 100%)" }}
+          >
+            <Download size={16} /> Download tunnix.exe (Windows)
+          </a>
+
           <div style={{ display: "flex", gap: "0.5rem", backgroundColor: "rgba(15,23,42,0.9)", padding: "0.65rem 0.85rem", borderRadius: 8 }}>
             <code className="font-mono" style={{ fontSize: "0.8rem", color: "#c084fc", flex: 1, overflowX: "auto" }}>
               {winCmd}
