@@ -24,14 +24,30 @@ subdomainRoutes.get("/", (c) => {
 subdomainRoutes.post("/", async (c) => {
   const requestId = c.get("requestId" as never) ?? crypto.randomUUID();
   const userId = c.get("userId" as never);
-  const body = await c.req.json().catch(() => ({}));
+
+  const body = await c.req.json().catch(() => {
+    throw new ApiError(400, "BAD_REQUEST", "Request body must be valid JSON.");
+  });
 
   const { subdomain } = body;
   if (!subdomain || typeof subdomain !== "string") {
     throw new ApiError(400, "INVALID_INPUT", "Subdomain name is required.");
   }
 
-  const result = reserveSubdomain(userId, subdomain);
+  const normalized = subdomain.trim().toLowerCase();
+
+  // Check if subdomain is blocked by admin
+  const { getDb } = await import("../../core/db/db");
+  const db = getDb();
+  const blocked = db
+    .query<{ id: string }, [string]>("SELECT id FROM blocked_subdomains WHERE subdomain = ? LIMIT 1")
+    .get(normalized);
+
+  if (blocked) {
+    throw new ApiError(422, "SUBDOMAIN_BLOCKED", "This subdomain has been blocked by an administrator.");
+  }
+
+  const result = reserveSubdomain(userId, normalized);
   return c.json(toSuccessResponse(result, requestId), 201);
 });
 
