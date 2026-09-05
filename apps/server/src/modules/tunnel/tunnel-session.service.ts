@@ -146,7 +146,16 @@ export async function issueTunnelSession(params: {
   const sessionId = crypto.randomUUID();
   const grantJti = crypto.randomUUID();
   const grantExpiresAt = new Date(Date.now() + env.TUNNEL_GRANT_TTL_SECONDS * 1000).toISOString();
-  const publicUrl = `http://${subdomain}.${env.WILDCARD_BASE_DOMAIN}`;
+  let protocol = "http:";
+  let portSuffix = "";
+  try {
+    const gwUrl = new URL(env.GATEWAY_PUBLIC_BASE_URL);
+    protocol = gwUrl.protocol || "http:";
+    if (gwUrl.port && gwUrl.port !== "80" && gwUrl.port !== "443") {
+      portSuffix = `:${gwUrl.port}`;
+    }
+  } catch {}
+  const publicUrl = `${protocol}//${subdomain}.${env.WILDCARD_BASE_DOMAIN}${portSuffix}`;
   const targetUrl = `http://localhost:${params.localPort}`;
   const nowIso = new Date().toISOString();
 
