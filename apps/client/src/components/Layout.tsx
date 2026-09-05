@@ -19,6 +19,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useAuth } from "../store/authContext";
+import { AccountIdenticon } from "./AccountIdenticon";
 
 import { ErrorBoundary } from "./ErrorBoundary";
 
@@ -59,8 +60,8 @@ export const Layout: React.FC = () => {
       <aside
         style={{
           width: 260,
-          backgroundColor: "#0b0f19",
-          borderRight: "1px solid rgba(255,255,255,0.08)",
+          backgroundColor: "var(--bg-sidebar)",
+          borderRight: "1px solid var(--border-subtle)",
           display: "flex",
           flexDirection: "column",
           position: "fixed",
@@ -69,6 +70,7 @@ export const Layout: React.FC = () => {
           left: 0,
           zIndex: 40,
           transform: mobileOpen ? "translateX(0)" : undefined,
+          transition: "background-color 0.2s ease, border-color 0.2s ease",
         }}
       >
         {/* Brand */}
@@ -78,7 +80,7 @@ export const Layout: React.FC = () => {
             display: "flex",
             alignItems: "center",
             gap: "0.75rem",
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
+            borderBottom: "1px solid var(--border-subtle)",
           }}
         >
           <div
@@ -175,28 +177,13 @@ export const Layout: React.FC = () => {
         </div>
 
         {/* User Card */}
-        <div style={{ padding: "1rem", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+        <div style={{ padding: "1rem", borderTop: "1px solid var(--border-subtle)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", overflow: "hidden" }}>
-              <div
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: "50%",
-                  backgroundColor: "#334155",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 600,
-                  fontSize: "0.85rem",
-                  color: "#f8fafc",
-                }}
-              >
-                {user?.email ? user.email.substring(0, 2).toUpperCase() : "US"}
-              </div>
+              <AccountIdenticon identifier={user?.id || user?.email} size={34} />
               <div style={{ overflow: "hidden" }}>
-                <div style={{ fontSize: "0.85rem", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {user?.email || "User"}
+                <div style={{ fontSize: "0.85rem", fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "var(--text-main)" }}>
+                  {user?.name || user?.email || "User"}
                 </div>
                 <div style={{ display: "flex", gap: "0.25rem", marginTop: 2 }}>
                   {user?.role === "admin" ? (
@@ -213,7 +200,7 @@ export const Layout: React.FC = () => {
               style={{
                 background: "none",
                 border: "none",
-                color: "#94a3b8",
+                color: "var(--text-muted)",
                 cursor: "pointer",
                 padding: 6,
                 borderRadius: 6,
@@ -226,7 +213,7 @@ export const Layout: React.FC = () => {
       </aside>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, marginLeft: 260, minHeight: "100vh", backgroundColor: "#07090e", padding: "2rem" }}>
+      <main style={{ flex: 1, marginLeft: 260, minHeight: "100vh", backgroundColor: "var(--bg-dark)", color: "var(--text-main)", padding: "2rem", transition: "background-color 0.2s ease" }}>
         <ErrorBoundary>
           <Outlet />
         </ErrorBoundary>
