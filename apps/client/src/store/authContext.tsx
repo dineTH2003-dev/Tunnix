@@ -14,6 +14,7 @@ export interface UserProfile {
 
 interface AuthContextType {
   user: UserProfile | null;
+  setUser: (user: UserProfile | null) => void;
   loading: boolean;
   requestOtp: (email: string, turnstileToken?: string) => Promise<{ challengeId: string }>;
   verifyOtp: (challengeId: string, otp: string) => Promise<UserProfile>;
@@ -107,6 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
+        setUser,
         loading,
         requestOtp,
         verifyOtp,
