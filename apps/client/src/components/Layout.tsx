@@ -5,11 +5,14 @@ import {
   Key,
   Globe,
   Radio,
+  History,
   Download,
   Settings,
   ShieldAlert,
   Users,
   FileText,
+  Shield,
+  Lock,
   LogOut,
   Menu,
   X,
@@ -34,6 +37,7 @@ export const Layout: React.FC = () => {
     { label: "Agent Tokens", path: "/tokens", icon: Key },
     { label: "Subdomains", path: "/subdomains", icon: Globe },
     { label: "Active Tunnels", path: "/tunnels", icon: Radio },
+    { label: "Tunnel History", path: "/tunnels/history", icon: History },
     { label: "Download CLI", path: "/download", icon: Download },
     { label: "Settings", path: "/settings", icon: Settings },
   ];
@@ -41,8 +45,11 @@ export const Layout: React.FC = () => {
   const adminNavItems = [
     { label: "Admin Stats", path: "/admin", icon: ShieldAlert },
     { label: "User Management", path: "/admin/users", icon: Users },
-    { label: "Global Tunnels", path: "/admin/tunnels", icon: Radio },
-    { label: "Global Subdomains", path: "/admin/subdomains", icon: Globe },
+    { label: "Live Tunnels", path: "/admin/tunnels", icon: Radio },
+    { label: "Tunnel History", path: "/admin/tunnels/history", icon: History },
+    { label: "Reserved Subdomains", path: "/admin/subdomains", icon: Globe },
+    { label: "Blocked Subdomains", path: "/admin/subdomains/blocked", icon: Shield },
+    { label: "Access Control", path: "/admin/access-control", icon: Lock },
     { label: "Audit Logs", path: "/admin/audit-logs", icon: FileText },
   ];
 

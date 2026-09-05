@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Radio, RefreshCw, PowerOff, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Radio, RefreshCw, PowerOff, ExternalLink, History } from "lucide-react";
 import { apiRequest } from "../services/api";
 
 interface TunnelSession {
@@ -54,9 +55,14 @@ export const ActiveTunnelsPage: React.FC = () => {
             Monitor and control your active tunnel connections in real time.
           </p>
         </div>
-        <button onClick={fetchTunnels} className="btn-secondary">
-          <RefreshCw size={16} className={loading ? "spin" : ""} /> Refresh
-        </button>
+        <div style={{ display: "flex", gap: 10 }}>
+          <Link to="/tunnels/history" className="btn-secondary" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <History size={16} /> Tunnel History
+          </Link>
+          <button onClick={fetchTunnels} className="btn-secondary">
+            <RefreshCw size={16} className={loading ? "spin" : ""} /> Refresh
+          </button>
+        </div>
       </div>
 
       <div className="glass-card" style={{ padding: "1.5rem" }}>
