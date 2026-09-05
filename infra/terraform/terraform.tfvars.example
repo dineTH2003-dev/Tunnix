@@ -1,0 +1,39 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# terraform.tfvars.example
+#
+# Copy this file to terraform.tfvars and fill in the values before running
+# `terraform init && terraform apply`.
+#
+# DO NOT commit terraform.tfvars to version control — it contains secrets.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# AWS region — ap-southeast-1 is Singapore (closest to target users)
+aws_region = "ap-southeast-1"
+
+# Deployment environment tag applied to all resources
+environment = "prod"
+
+# ── GitHub ────────────────────────────────────────────────────────────────────
+# Your GitHub organisation or username
+github_org = "my-org"
+
+# Repository name (without the org prefix)
+github_repo = "Tunnix"
+
+# Full HTTPS clone URL of the repository — used by Amplify
+github_repo_url = "https://github.com/my-org/Tunnix"
+
+# Personal Access Token with `repo` scope.
+# Create one at: https://github.com/settings/tokens
+# Amplify uses this to clone the repository and set up webhooks.
+github_access_token = "ghp_REPLACE_WITH_YOUR_TOKEN"
+
+# ── EC2 ───────────────────────────────────────────────────────────────────────
+ec2_instance_type = "t3.small"
+
+# (Optional) Name of an existing EC2 key pair for emergency SSH access.
+# Leave as null to rely on SSM Session Manager instead.
+ec2_key_pair_name = null
+
+# Size in GB of the EBS volume that stores the SQLite database at /data/tunnix
+ebs_volume_size_gb = 20
