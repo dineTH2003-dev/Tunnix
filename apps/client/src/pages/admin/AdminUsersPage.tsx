@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Users, CheckCircle, XCircle, Shield, Edit2, Save, X } from "lucide-react";
+import { Users, CheckCircle, XCircle, Shield, Edit2, Save, X, ChevronRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../../services/api";
 
 interface UserRecord {
@@ -14,6 +15,7 @@ interface UserRecord {
 }
 
 export const AdminUsersPage: React.FC = () => {
+  const navigate = useNavigate();
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [editingUser, setEditingUser] = useState<UserRecord | null>(null);
 
@@ -91,7 +93,14 @@ export const AdminUsersPage: React.FC = () => {
               <tbody>
                 {users.map((u) => (
                   <tr key={u.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <td style={{ padding: "0.75rem 1rem", fontWeight: 600 }}>{u.email}</td>
+                    <td style={{ padding: "0.75rem 1rem", fontWeight: 600 }}>
+                      <button
+                        onClick={() => navigate(`/admin/users/${u.id}`)}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "#a5b4fc", fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}
+                      >
+                        {u.email} <ChevronRight size={13} />
+                      </button>
+                    </td>
                     <td style={{ padding: "0.75rem 1rem" }}>
                       <span className={u.role === "admin" ? "badge badge-admin" : "badge badge-active"}>{u.role}</span>
                     </td>
