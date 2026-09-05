@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./store/authContext";
+import { ThemeProvider } from "./store/themeContext";
 import { ProtectedRoute, AdminRoute } from "./components/ProtectedRoute";
 import { Layout } from "./components/Layout";
 
@@ -31,8 +32,9 @@ import { AdminAuditLogsPage } from "./pages/admin/AdminAuditLogsPage";
 
 export const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <AuthProvider>
+    <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
         <Routes>
           {/* Public Marketing Landing Page */}
           <Route path="/" element={<LandingPage />} />
@@ -72,5 +74,6 @@ export const App: React.FC = () => {
         </Routes>
       </AuthProvider>
     </BrowserRouter>
+  </ThemeProvider>
   );
 };

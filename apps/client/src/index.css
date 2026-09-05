@@ -1,6 +1,10 @@
 @layer base {
-  :root {
+  :root,
+  [data-theme="dark"] {
     --bg-dark: #07090e;
+    --bg-sidebar: #0b0f19;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
     --bg-card: rgba(15, 23, 42, 0.75);
     --bg-card-hover: rgba(30, 41, 59, 0.85);
     --border-subtle: rgba(255, 255, 255, 0.08);
@@ -8,6 +12,28 @@
     --accent-cyan: #06b6d4;
     --accent-indigo: #6366f1;
     --accent-purple: #8b5cf6;
+    --input-bg: rgba(15, 23, 42, 0.8);
+    --input-border: rgba(255, 255, 255, 0.12);
+    --btn-sec-bg: rgba(255, 255, 255, 0.06);
+    --btn-sec-text: #e2e8f0;
+  }
+
+  [data-theme="light"] {
+    --bg-dark: #f8fafc;
+    --bg-sidebar: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f8fafc;
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-accent: rgba(99, 102, 241, 0.4);
+    --accent-cyan: #0284c7;
+    --accent-indigo: #4f46e5;
+    --accent-purple: #7c3aed;
+    --input-bg: #ffffff;
+    --input-border: rgba(0, 0, 0, 0.15);
+    --btn-sec-bg: rgba(0, 0, 0, 0.05);
+    --btn-sec-text: #1e293b;
   }
 }
 
@@ -19,10 +45,11 @@
 
 body {
   background-color: var(--bg-dark);
-  color: #f8fafc;
+  color: var(--text-main);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Typography Headings */
@@ -95,8 +122,8 @@ code, pre, .font-mono {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.06);
-  color: #e2e8f0;
+  background: var(--btn-sec-bg);
+  color: var(--btn-sec-text);
   font-weight: 500;
   padding: 0.625rem 1.25rem;
   border-radius: 8px;
@@ -109,8 +136,8 @@ code, pre, .font-mono {
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
 }
 
 .btn-danger {
@@ -133,20 +160,22 @@ code, pre, .font-mono {
 }
 
 /* Styled Form Inputs */
+.input,
 .input-field {
   width: 100%;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   border-radius: 8px;
   padding: 0.65rem 1rem;
-  color: #f8fafc;
+  color: var(--text-main);
   font-size: 0.95rem;
   outline: none;
   transition: all 0.2s ease;
 }
 
+.input:focus,
 .input-field:focus {
-  border-color: #6366f1;
+  border-color: var(--accent-indigo);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
