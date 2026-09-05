@@ -257,6 +257,68 @@ adminRoutes.post("/tunnels/:id/revoke", (c) => {
   return c.json(toSuccessResponse({ revoked: true }, requestId));
 });
 
+// POST /v1/admin/tunnels/:id/check — health-check a single tunnel session
+adminRoutes.post("/tunnels/:id/check", async (c) => {
+  const requestId = c.get("requestId" as never) as string;
+  const actorUserId = c.get("userId" as never) as string;
+  const sessionId = c.req.param("id");
+
+  const db = getDb();
+  const tunnel = db
+    .query<{ id: string; user_id: string; subdomain: string; status: string }, [string]>(
+      "SELECT id, user_id, subdomain, status FROM tunnel_sessions WHERE id = ? LIMIT 1",
+    )
+    .get(sessionId);
+
+  if (!tunnel) throw new ApiError(404, "NOT_FOUND", "Tunnel session not found.");
+
+  const { checkTunnelSessionHealth } = await import("../tunnel/tunnel-session.service");
+  const result = await checkTunnelSessionHealth(sessionId);
+
+  if (result.offline) {
+    writeAuditLog({
+      actorUserId,
+      action: "admin_tunnel_health_check_disconnected",
+      entityType: "tunnel_session",
+      entityId: sessionId,
+      ipAddress: c.req.header("x-forwarded-for") ?? undefined,
+      userAgent: c.req.header("user-agent") ?? undefined,
+      metadata: { ownerUserId: tunnel.user_id, subdomain: tunnel.subdomain, reason: "health_check_offline" },
+    });
+  }
+
+  return c.json(toSuccessResponse(result, requestId));
+});
+
+// POST /v1/admin/tunnels/check-all — bulk health-check all active/pending tunnels
+adminRoutes.post("/tunnels/check-all", async (c) => {
+  const requestId = c.get("requestId" as never) as string;
+  const actorUserId = c.get("userId" as never) as string;
+
+  const db = getDb();
+  const sessionIds = db
+    .query<{ id: string }, []>(
+      `SELECT id FROM tunnel_sessions WHERE status IN ('pending', 'active') ORDER BY created_at DESC`,
+    )
+    .all()
+    .map((r) => r.id);
+
+  const { checkTunnelSessionsHealth } = await import("../tunnel/tunnel-session.service");
+  const result = await checkTunnelSessionsHealth(sessionIds);
+
+  writeAuditLog({
+    actorUserId,
+    action: "admin_tunnels_health_check_bulk",
+    entityType: "tunnel_session",
+    entityId: "bulk",
+    ipAddress: c.req.header("x-forwarded-for") ?? undefined,
+    userAgent: c.req.header("user-agent") ?? undefined,
+    metadata: result,
+  });
+
+  return c.json(toSuccessResponse(result, requestId));
+});
+
 // ---------------------------------------------------------------------------
 // Agent Tokens (Admin)
 // ---------------------------------------------------------------------------
