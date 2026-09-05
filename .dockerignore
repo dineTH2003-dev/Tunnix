@@ -1,0 +1,35 @@
+# Node / Bun
+node_modules/
+**/node_modules/
+.bun
+
+# Build outputs (built inside Docker)
+apps/client/dist/
+apps/server/dist/
+
+# Git
+.git/
+.gitignore
+
+# Dev environment files
+.env
+.env.*
+!.env.production
+
+# OS
+.DS_Store
+*.swp
+
+# Terraform / infra (not needed in Docker)
+infra/
+deploy/
+dist/
+docs/
+
+# Logs
+*.log
+
+# SQLite dev files
+*.db
+*.db-shm
+*.db-wal
