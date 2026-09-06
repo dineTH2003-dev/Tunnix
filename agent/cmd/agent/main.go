@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 
 	"tunnix/agent/internal/api"
@@ -165,11 +166,23 @@ func handleHTTP(cfg *config.Config) {
 		if (arg == "--subdomain" || arg == "-s") && i+1 < len(os.Args) {
 			requestedSubdomain = os.Args[i+1]
 			i++
+		} else if strings.HasPrefix(arg, "--subdomain=") {
+			requestedSubdomain = strings.TrimPrefix(arg, "--subdomain=")
+		} else if strings.HasPrefix(arg, "-s=") {
+			requestedSubdomain = strings.TrimPrefix(arg, "-s=")
 		} else if arg == "--server" && i+1 < len(os.Args) {
 			serverURL = os.Args[i+1]
 			i++
-		} else if portStr == "" && arg[0] != '-' {
+		} else if strings.HasPrefix(arg, "--server=") {
+			serverURL = strings.TrimPrefix(arg, "--server=")
+		} else if portStr == "" && !strings.HasPrefix(arg, "-") {
 			portStr = arg
+		} else if requestedSubdomain == "" {
+			// Handles positional or flags like --my-cool-app
+			cleaned := strings.TrimLeft(arg, "-")
+			if cleaned != "" {
+				requestedSubdomain = cleaned
+			}
 		}
 	}
 
