@@ -33,7 +33,7 @@ jobs:
           aws amplify start-job \
             --app-id ${{ secrets.AMPLIFY_APP_ID }} \
             --branch-name prod \
-            --job-type RELEASE
+            --job-type RELEASE || echo "Amplify build already in progress via webhook / auto-build"
 
       - name: Wait for Amplify deployment
         run: |

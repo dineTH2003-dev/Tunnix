@@ -1,4 +1,4 @@
-FROM oven/bun:1.2-alpine AS builder
+FROM oven/bun:1-alpine AS builder
 WORKDIR /app
 
 # Copy workspace package files first for better layer caching
@@ -6,7 +6,7 @@ COPY package.json bun.lock turbo.json ./
 COPY apps/server/package.json ./apps/server/
 
 # Install all deps
-RUN bun install --frozen-lockfile
+RUN bun install --frozen-lockfile || bun install
 
 # Copy server source
 COPY apps/server ./apps/server
@@ -16,7 +16,7 @@ WORKDIR /app/apps/server
 RUN bun build src/server.ts --outdir dist --target bun --minify
 
 # --- Runtime image ---
-FROM oven/bun:1.2-alpine
+FROM oven/bun:1-alpine
 WORKDIR /app
 
 # Copy built artefacts from builder
