@@ -35,11 +35,29 @@ function resolveAgentBinary(filename: string): string | null {
   return null;
 }
 
-/** Serve automated PowerShell installer script for Windows */
-downloadRoutes.get("/install.ps1", (c) => {
+/** Resolve the public base URL for install scripts, with override via ?baseUrl= query param */
+function resolveScriptBaseUrl(c: { req: { header: (k: string) => string | undefined; query: (k: string) => string | undefined } }): string {
+  // Allow frontend to pass the correct public URL explicitly
+  const queryBase = c.req.query("baseUrl");
+  if (queryBase) {
+    try {
+      const u = new URL(queryBase);
+      return u.origin; // sanitise: only keep origin
+    } catch {}
+  }
+  // X-Forwarded-Host is set by reverse proxies (nginx, AWS ALB, etc.)
+  const fwdHost = c.req.header("x-forwarded-host");
+  const fwdProto = c.req.header("x-forwarded-proto") || "https";
+  if (fwdHost) return `${fwdProto}://${fwdHost}`;
+  // Fallback: use the Host header (may be localhost:4310 behind Vite proxy)
   const host = c.req.header("host") || "localhost:4310";
   const protocol = c.req.header("x-forwarded-proto") || "http";
-  const baseUrl = `${protocol}://${host}`;
+  return `${protocol}://${host}`;
+}
+
+/** Serve automated PowerShell installer script for Windows */
+downloadRoutes.get("/install.ps1", (c) => {
+  const baseUrl = resolveScriptBaseUrl(c as never);
 
   const psScript = `$ErrorActionPreference = 'Stop'
 $installDir = "$env:LOCALAPPDATA\\Programs\\Tunnix"
@@ -63,9 +81,7 @@ Write-Host "👉 Run 'tunnix login <agent-token>' in your terminal to authentica
 
 /** Serve automated Shell installer script for Linux & macOS */
 downloadRoutes.get("/install.sh", (c) => {
-  const host = c.req.header("host") || "localhost:4310";
-  const protocol = c.req.header("x-forwarded-proto") || "http";
-  const baseUrl = `${protocol}://${host}`;
+  const baseUrl = resolveScriptBaseUrl(c as never);
 
   const shScript = `#!/bin/sh
 set -e

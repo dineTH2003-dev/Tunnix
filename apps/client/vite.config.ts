@@ -16,6 +16,9 @@ export default defineConfig({
       "/v1": {
         target: "http://localhost:4310",
         changeOrigin: true,
+        headers: {
+          "X-Forwarded-Proto": "http",
+        },
       },
     },
   },

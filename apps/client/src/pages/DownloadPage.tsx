@@ -15,9 +15,13 @@ export const DownloadPage: React.FC = () => {
     (typeof window !== "undefined" ? window.location.origin : "")
   ).replace(/\/+$/, "");
 
-  const winScript = `iwr -useb ${apiBase}/v1/download/install.ps1 | iex`;
-  const linuxScript = `curl -fsSL ${apiBase}/v1/download/install.sh | sh`;
-  const macScript = `curl -fsSL ${apiBase}/v1/download/install.sh | sh`;
+  // Pass the public origin as ?baseUrl= so the server embeds the correct URL
+  // in the generated install script (needed when behind Vite dev proxy which
+  // rewrites the Host header to localhost:4310).
+  const encodedBase = encodeURIComponent(apiBase);
+  const winScript = `iwr -useb "${apiBase}/v1/download/install.ps1?baseUrl=${encodedBase}" | iex`;
+  const linuxScript = `curl -fsSL "${apiBase}/v1/download/install.sh?baseUrl=${encodedBase}" | sh`;
+  const macScript = `curl -fsSL "${apiBase}/v1/download/install.sh?baseUrl=${encodedBase}" | sh`;
 
   return (
     <div>
