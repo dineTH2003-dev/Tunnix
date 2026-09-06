@@ -24,15 +24,15 @@
 ## 🏗️ System Architecture
 
 ```mermaid
-graph TD
-    Client["React Dashboard (SPA)\n:3000 / :443"] -->|REST / JWT| ControlPlane["Server API (Hono / Bun)\n:4310"]
-    Agent["Go Agent CLI\ntunnix http <port>"] -->|1. Request Grant| ControlPlane
-    ControlPlane -->|2. Issue Grant JWT| Agent
-    Agent -->|3. Connect WebSocket| Gateway["Go Ingress Gateway\n:8080 (HTTP) / :9000 (WS)"]
-    Gateway -->|4. Introspect Grant| ControlPlane
-    Browser["Public Web Client"] -->|HTTP Request (*.tunnix.local)| Gateway
-    Gateway <-->|Tunnel Multiplexing| Agent
-    Agent <-->|Local HTTP Forward| LocalApp["Developer App\nlocalhost:<port>"]
+flowchart TD
+    Client["React Dashboard (SPA)<br/>:3000 / :443"] -->|"REST / JWT"| ControlPlane["Server API (Hono / Bun)<br/>:4310"]
+    Agent["Go Agent CLI<br/>tunnix http :port"] -->|"1. Request Grant"| ControlPlane
+    ControlPlane -->|"2. Issue Grant JWT"| Agent
+    Agent -->|"3. Connect WebSocket"| Gateway["Go Ingress Gateway<br/>:8080 (HTTP) / :9000 (WS)"]
+    Gateway -->|"4. Introspect Grant"| ControlPlane
+    Browser["Public Web Client"] -->|"HTTP Request (*.sslip.io)"| Gateway
+    Gateway <-->|"Tunnel Multiplexing"| Agent
+    Agent <-->|"Local HTTP Forward"| LocalApp["Developer App<br/>localhost:port"]
 ```
 
 ---
@@ -52,7 +52,7 @@ cd Tunnix
 # Install workspace dependencies & run migrations
 bun install
 cd apps/server
-bun run src/scripts/migrate.ts
+bun run scripts/migrate.ts
 ```
 
 ### 3. Running Services
