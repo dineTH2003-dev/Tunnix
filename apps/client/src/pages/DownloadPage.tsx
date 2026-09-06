@@ -100,17 +100,28 @@ export const DownloadPage: React.FC = () => {
                 <FolderDown size={16} /> Method 1: Direct Binary Download
               </div>
               <p style={{ color: "#94a3b8", fontSize: "0.8rem", marginBottom: "0.75rem", lineHeight: 1.5 }}>
-                Download standalone executable binary to run manually on Linux servers or desktop.
+                Download standalone executable binary to run manually on Linux servers or desktop:
               </p>
-              <a
-                href={`${apiBase}/v1/download/linux`}
-                download="tunnix-linux-amd64"
-                className="btn-primary"
-                id="btn-download-linux-bin"
-                style={{ width: "100%", justifyContent: "center", padding: "0.6rem", fontSize: "0.85rem", textDecoration: "none" }}
-              >
-                <Download size={16} /> Download Linux Binary (5.4 MB)
-              </a>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <a
+                  href={`${apiBase}/v1/download/linux-amd64`}
+                  download="tunnix-linux-amd64"
+                  className="btn-primary"
+                  id="btn-download-linux-bin"
+                  style={{ width: "100%", justifyContent: "center", padding: "0.6rem", fontSize: "0.85rem", textDecoration: "none" }}
+                >
+                  <Download size={16} /> Download Linux (x86_64 - 5.4 MB)
+                </a>
+                <a
+                  href={`${apiBase}/v1/download/linux-arm64`}
+                  download="tunnix-linux-arm64"
+                  className="btn-secondary"
+                  id="btn-download-linux-arm64"
+                  style={{ width: "100%", justifyContent: "center", padding: "0.5rem", fontSize: "0.8rem", textDecoration: "none" }}
+                >
+                  <Download size={14} /> Download Linux (ARM64 - 5.2 MB)
+                </a>
+              </div>
             </div>
 
             {/* Method 2: One-Line Terminal Script */}
@@ -119,7 +130,7 @@ export const DownloadPage: React.FC = () => {
                 <Terminal size={16} /> Method 2: Curl Terminal One-Liner
               </div>
               <p style={{ color: "#94a3b8", fontSize: "0.8rem", marginBottom: "0.75rem", lineHeight: 1.5 }}>
-                Automatically installs binary to <code>/usr/local/bin/tunnix</code>:
+                Auto-detects CPU architecture and installs binary to <code>/usr/local/bin/tunnix</code>:
               </p>
               <div style={{ display: "flex", gap: "0.5rem", backgroundColor: "#090d16", padding: "0.6rem 0.75rem", borderRadius: 8, border: "1px solid rgba(255,255,255,0.05)" }}>
                 <code className="font-mono" style={{ fontSize: "0.75rem", color: "#38bdf8", flex: 1, overflowX: "auto", whiteSpace: "nowrap" }}>
@@ -139,7 +150,7 @@ export const DownloadPage: React.FC = () => {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                 <Cpu size={24} color="#818cf8" />
-                <h2 style={{ fontSize: "1.15rem", fontWeight: 600 }}>macOS (Intel / Apple Silicon)</h2>
+                <h2 style={{ fontSize: "1.15rem", fontWeight: 600 }}>macOS (Apple Silicon / Intel)</h2>
               </div>
               <span className="badge badge-active" style={{ fontSize: "0.75rem" }}>tunnix</span>
             </div>
@@ -150,17 +161,28 @@ export const DownloadPage: React.FC = () => {
                 <FolderDown size={16} /> Method 1: Direct Binary Download
               </div>
               <p style={{ color: "#94a3b8", fontSize: "0.8rem", marginBottom: "0.75rem", lineHeight: 1.5 }}>
-                Download standalone macOS executable binary for Apple Silicon / Intel Mac.
+                Download standalone binary for Apple Silicon (M1-M4) or Intel Mac:
               </p>
-              <a
-                href={`${apiBase}/v1/download/mac`}
-                download="tunnix-darwin-arm64"
-                className="btn-primary"
-                id="btn-download-mac-bin"
-                style={{ width: "100%", justifyContent: "center", padding: "0.6rem", fontSize: "0.85rem", textDecoration: "none", backgroundColor: "#6366f1" }}
-              >
-                <Download size={16} /> Download macOS Binary (5.3 MB)
-              </a>
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <a
+                  href={`${apiBase}/v1/download/darwin-arm64`}
+                  download="tunnix-darwin-arm64"
+                  className="btn-primary"
+                  id="btn-download-mac-arm64"
+                  style={{ width: "100%", justifyContent: "center", padding: "0.6rem", fontSize: "0.85rem", textDecoration: "none", backgroundColor: "#6366f1" }}
+                >
+                  <Download size={16} /> Download Apple Silicon (5.3 MB)
+                </a>
+                <a
+                  href={`${apiBase}/v1/download/darwin-amd64`}
+                  download="tunnix-darwin-amd64"
+                  className="btn-secondary"
+                  id="btn-download-mac-amd64"
+                  style={{ width: "100%", justifyContent: "center", padding: "0.5rem", fontSize: "0.8rem", textDecoration: "none" }}
+                >
+                  <Download size={14} /> Download macOS Intel (5.5 MB)
+                </a>
+              </div>
             </div>
 
             {/* Method 2: One-Line Terminal Script */}

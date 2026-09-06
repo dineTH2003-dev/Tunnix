@@ -28,6 +28,11 @@ function resolveAgentBinary(filename: string): string | null {
     join(process.cwd(), "apps/server/dist/agents", filename),
     join(__dirname, "../../../../../dist/agents", filename),
     join(__dirname, "../../../../dist/agents", filename),
+    join("/data/agents", filename),
+    join("/data/tunnix/agents", filename),
+    join("/data", filename),
+    join("/app/dist/agents", filename),
+    join(process.cwd(), "agent/bin", filename),
   ];
   for (const c of candidates) {
     if (existsSync(c)) return c;
@@ -60,18 +65,37 @@ downloadRoutes.get("/install.ps1", (c) => {
   const baseUrl = resolveScriptBaseUrl(c as never);
 
   const psScript = `$ErrorActionPreference = 'Stop'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls13
+
 $installDir = "$env:LOCALAPPDATA\\Programs\\Tunnix"
-if (!(Test-Path $installDir)) { New-Item -ItemType Directory -Path $installDir -Force | Out-Null }
+if (!(Test-Path $installDir)) {
+    New-Item -ItemType Directory -Path $installDir -Force | Out-Null
+}
 $exePath = "$installDir\\tunnix.exe"
+
 Write-Host "⚡ Downloading Tunnix Agent CLI for Windows..." -ForegroundColor Cyan
-Invoke-WebRequest -Uri "${baseUrl}/v1/download/windows" -OutFile $exePath
+Invoke-WebRequest -Uri "${baseUrl}/v1/download/windows" -OutFile $exePath -UseBasicParsing
+
 $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
 if ($userPath -notlike "*$installDir*") {
     [Environment]::SetEnvironmentVariable("Path", "$userPath;$installDir", "User")
     $env:Path = "$env:Path;$installDir"
+    Write-Host " Added $installDir to User PATH." -ForegroundColor Gray
 }
-Write-Host "✅ Tunnix CLI successfully installed!" -ForegroundColor Green
-Write-Host "👉 Run 'tunnix login <agent-token>' in your terminal to authenticate." -ForegroundColor Yellow
+
+if (Test-Path $exePath) {
+    Write-Host "✅ Tunnix CLI successfully installed to $exePath!" -ForegroundColor Green
+    & "$exePath" version
+} else {
+    Write-Host "❌ Download completed but tunnix.exe not found at $exePath" -ForegroundColor Red
+    exit 1
+}
+
+Write-Host ""
+Write-Host "👉 Quick Start:" -ForegroundColor Yellow
+Write-Host "  1. Open a new terminal window"
+Write-Host "  2. tunnix login <agent-token>"
+Write-Host "  3. tunnix http 3000"
 `;
 
   return c.text(psScript, 200, {
@@ -85,30 +109,95 @@ downloadRoutes.get("/install.sh", (c) => {
 
   const shScript = `#!/bin/sh
 set -e
-echo "⚡ Downloading Tunnix Agent CLI..."
+
+echo "⚡ Detecting system architecture..."
 OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
-PLATFORM="linux"
+ARCH="$(uname -m | tr '[:upper:]' '[:lower:]')"
+
+PLATFORM=""
+
 if [ "$OS" = "darwin" ]; then
-    PLATFORM="mac"
+    case "$ARCH" in
+        arm64|aarch64)
+            PLATFORM="darwin-arm64"
+            ;;
+        x86_64|amd64)
+            PLATFORM="darwin-amd64"
+            ;;
+        *)
+            PLATFORM="darwin-arm64"
+            ;;
+    esac
+elif [ "$OS" = "linux" ]; then
+    case "$ARCH" in
+        arm64|aarch64)
+            PLATFORM="linux-arm64"
+            ;;
+        x86_64|amd64)
+            PLATFORM="linux-amd64"
+            ;;
+        *)
+            PLATFORM="linux-amd64"
+            ;;
+    esac
+else
+    echo "❌ Unsupported operating system: $OS"
+    exit 1
 fi
 
+echo "📥 Downloading Tunnix CLI for $OS ($ARCH) from ${baseUrl}..."
+
+TARGET_FILE="/usr/local/bin/tunnix"
+TMP_FILE="/tmp/tunnix_install_$$"
+
+# Download to temp location first
+curl -fsSL "${baseUrl}/v1/download/$PLATFORM" -o "$TMP_FILE"
+chmod +x "$TMP_FILE"
+
+# Determine install location
 if [ "$(id -u)" -eq 0 ]; then
-    curl -fsSL "${baseUrl}/v1/download/$PLATFORM" -o /usr/local/bin/tunnix
-    chmod +x /usr/local/bin/tunnix
-    echo "✅ Tunnix CLI installed to /usr/local/bin/tunnix"
+    mv -f "$TMP_FILE" "$TARGET_FILE"
+    INSTALLED_PATH="$TARGET_FILE"
+elif [ -w "/usr/local/bin" ]; then
+    mv -f "$TMP_FILE" "$TARGET_FILE"
+    INSTALLED_PATH="$TARGET_FILE"
+elif command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null; then
+    sudo mv -f "$TMP_FILE" "$TARGET_FILE"
+    INSTALLED_PATH="$TARGET_FILE"
 else
-    if command -v sudo >/dev/null 2>&1; then
-        sudo curl -fsSL "${baseUrl}/v1/download/$PLATFORM" -o /usr/local/bin/tunnix
-        sudo chmod +x /usr/local/bin/tunnix
-        echo "✅ Tunnix CLI installed to /usr/local/bin/tunnix"
-    else
-        mkdir -p "$HOME/.tunnix/bin"
-        curl -fsSL "${baseUrl}/v1/download/$PLATFORM" -o "$HOME/.tunnix/bin/tunnix"
-        chmod +x "$HOME/.tunnix/bin/tunnix"
-        echo "✅ Tunnix CLI installed to $HOME/.tunnix/bin/tunnix"
-    fi
+    # Fallback to user local bin
+    USER_BIN="$HOME/.local/bin"
+    mkdir -p "$USER_BIN"
+    mv -f "$TMP_FILE" "$USER_BIN/tunnix"
+    INSTALLED_PATH="$USER_BIN/tunnix"
+
+    # Ensure in PATH
+    case ":$PATH:" in
+        *":$USER_BIN:"*) ;;
+        *)
+            export PATH="$USER_BIN:$PATH"
+            for rc in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile"; do
+                if [ -f "$rc" ] && ! grep -q "$USER_BIN" "$rc"; then
+                    echo "export PATH=\"\\$HOME/.local/bin:\\$PATH\"" >> "$rc"
+                fi
+            done
+            echo "ℹ️  Added $USER_BIN to PATH in your shell profiles."
+            ;;
+    esac
 fi
-echo "👉 Run 'tunnix login <agent-token>' to get started."
+
+if [ -x "$INSTALLED_PATH" ]; then
+    echo "✅ Tunnix CLI successfully installed to $INSTALLED_PATH!"
+    "$INSTALLED_PATH" version || true
+else
+    echo "❌ Installation failed."
+    exit 1
+fi
+
+echo ""
+echo "👉 Quick Start:"
+echo "  1. tunnix login <agent-token>"
+echo "  2. tunnix http 3000"
 `;
 
   return c.text(shScript, 200, {

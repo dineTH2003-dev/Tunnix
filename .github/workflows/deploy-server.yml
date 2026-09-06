@@ -6,6 +6,7 @@ on:
       - prod
     paths:
       - 'apps/server/**'
+      - 'agent/**'
       - 'package.json'
       - 'bun.lock'
   workflow_dispatch:
