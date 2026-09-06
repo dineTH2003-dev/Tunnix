@@ -68,6 +68,6 @@ module "amplify" {
 
   github_repo_url     = var.github_repo_url
   github_access_token = var.github_access_token
-  api_url             = "http://${module.ec2.eip_public_ip}:4310"
+  api_url             = "http://${module.ec2.eip_public_ip}"
   environment         = var.environment
 }

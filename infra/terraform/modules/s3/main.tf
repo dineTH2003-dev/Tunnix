@@ -74,6 +74,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "db_backups" {
     id     = "archive-and-expire"
     status = "Enabled"
 
+    filter {}
+
     transition {
       days          = 30
       storage_class = "GLACIER"
