@@ -11,3 +11,7 @@ agent/agent
 gateway/bin/
 gateway/gateway
 *.tsbuildinfo
+*.tfvars
+.terraform/
+*.tfplan
+tfplan
