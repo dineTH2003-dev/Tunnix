@@ -120,6 +120,7 @@ resource "aws_ecs_task_definition" "server" {
         { name = "APP_NAME",      value = "Tunnix" },
         { name = "LOG_LEVEL",     value = "info" },
         { name = "AUTH_ALLOW_DEFAULT_OTP", value = "true" },
+        { name = "EMAIL_FROM_ADDRESS", value = "dinethdilshan64@gmail.com" },
       ]
 
       secrets = [
