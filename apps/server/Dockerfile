@@ -19,11 +19,13 @@ RUN bun build src/server.ts --outdir dist --target bun --minify
 FROM oven/bun:1-alpine
 WORKDIR /app
 
-# Copy built artefacts from builder
-COPY --from=builder /app/apps/server/dist       ./dist
-COPY --from=builder /app/apps/server/migrations ./migrations
-COPY --from=builder /app/apps/server/scripts    ./scripts
-COPY --from=builder /app/apps/server/package.json ./package.json
+# Copy node_modules and source
+COPY --from=builder /app/node_modules              ./node_modules
+COPY --from=builder /app/apps/server/src           ./src
+COPY --from=builder /app/apps/server/dist          ./dist
+COPY --from=builder /app/apps/server/migrations    ./migrations
+COPY --from=builder /app/apps/server/scripts       ./scripts
+COPY --from=builder /app/apps/server/package.json  ./package.json
 
 # Create data directory -- EBS volume is mounted here at runtime (/data/tunnix)
 RUN mkdir -p /data
