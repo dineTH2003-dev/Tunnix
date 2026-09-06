@@ -37,9 +37,9 @@ resource "aws_iam_role_policy" "ecs_task_execution_ssm" {
         Resource = "arn:aws:ssm:*:*:parameter${var.ssm_path_prefix}/*"
       },
       {
-        Sid    = "KMSDecrypt"
-        Effect = "Allow"
-        Action = ["kms:Decrypt"]
+        Sid      = "KMSDecrypt"
+        Effect   = "Allow"
+        Action   = ["kms:Decrypt"]
         Resource = "*"
       },
       {
@@ -86,11 +86,11 @@ resource "aws_cloudwatch_log_group" "gateway" {
 
 # ── Task Definition: tunnix-server ───────────────────────────────────────────
 resource "aws_ecs_task_definition" "server" {
-  family                = "tunnix-server"
-  network_mode          = "bridge"
-  execution_role_arn    = aws_iam_role.ecs_task_execution.arn
-  cpu                   = "256"
-  memory                = "512"
+  family             = "tunnix-server"
+  network_mode       = "bridge"
+  execution_role_arn = aws_iam_role.ecs_task_execution.arn
+  cpu                = "256"
+  memory             = "512"
 
   container_definitions = jsonencode([
     {
@@ -114,11 +114,11 @@ resource "aws_ecs_task_definition" "server" {
       ]
 
       environment = [
-        { name = "PORT",          value = "4310" },
-        { name = "DATABASE_URL",  value = "/data/tunnix.db" },
-        { name = "NODE_ENV",      value = "production" },
-        { name = "APP_NAME",      value = "Tunnix" },
-        { name = "LOG_LEVEL",     value = "info" },
+        { name = "PORT", value = "4310" },
+        { name = "DATABASE_URL", value = "/data/tunnix.db" },
+        { name = "NODE_ENV", value = "production" },
+        { name = "APP_NAME", value = "Tunnix" },
+        { name = "LOG_LEVEL", value = "info" },
         { name = "AUTH_ALLOW_DEFAULT_OTP", value = "true" },
         { name = "EMAIL_FROM_ADDRESS", value = "dinethdilshan64@gmail.com" },
       ]
@@ -180,7 +180,7 @@ resource "aws_ecs_task_definition" "server" {
   ])
 
   volume {
-    name = "tunnix-data"
+    name      = "tunnix-data"
     host_path = "/data/tunnix"
   }
 
@@ -215,9 +215,9 @@ resource "aws_ecs_task_definition" "gateway" {
 
       environment = [
         { name = "GATEWAY_HTTP_PORT", value = "8080" },
-        { name = "GATEWAY_WS_PORT",   value = "9000" },
-        { name = "SERVER_API_URL",    value = "http://172.17.0.1:4310" },
-        { name = "LOG_LEVEL",         value = "info" },
+        { name = "GATEWAY_WS_PORT", value = "9000" },
+        { name = "SERVER_API_URL", value = "http://172.17.0.1:4310" },
+        { name = "LOG_LEVEL", value = "info" },
       ]
 
       secrets = [

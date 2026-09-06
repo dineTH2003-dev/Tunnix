@@ -65,8 +65,8 @@ resource "aws_ssm_parameter" "turnstile_secret_key" {
 
 # ── String parameters ─────────────────────────────────────────────────────────
 resource "aws_ssm_parameter" "wildcard_base_domain" {
-  name  = "${local.prefix}/WILDCARD_BASE_DOMAIN"
-  type  = "String"
+  name = "${local.prefix}/WILDCARD_BASE_DOMAIN"
+  type = "String"
   # Will be updated manually after Amplify app is deployed
   value = coalesce(var.amplify_default_domain, "TBD")
 

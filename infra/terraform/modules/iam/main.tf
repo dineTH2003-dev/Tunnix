@@ -60,8 +60,8 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 
 # ── GitHub Actions OIDC provider ──────────────────────────────────────────────
 resource "aws_iam_openid_connect_provider" "github" {
-  url             = "https://token.actions.githubusercontent.com"
-  client_id_list  = ["sts.amazonaws.com"]
+  url            = "https://token.actions.githubusercontent.com"
+  client_id_list = ["sts.amazonaws.com"]
   thumbprint_list = [
     "6938fd4d98bab03faadb97b34396831e3780aea1",
     "1c5876bd52c77c5e16a6a840e69f8d5069f0b127"
@@ -110,9 +110,9 @@ resource "aws_iam_role_policy" "github_actions_inline" {
     Statement = [
       # ECR auth token (not covered by PowerUser policy GetAuthorizationToken alone)
       {
-        Sid    = "ECRAuth"
-        Effect = "Allow"
-        Action = ["ecr:GetAuthorizationToken"]
+        Sid      = "ECRAuth"
+        Effect   = "Allow"
+        Action   = ["ecr:GetAuthorizationToken"]
         Resource = "*"
       },
       # ECS deployments
@@ -161,9 +161,9 @@ resource "aws_iam_role_policy" "github_actions_inline" {
       },
       # IAM PassRole — allow passing the ECS task execution role to ECS
       {
-        Sid    = "IAMPassRole"
-        Effect = "Allow"
-        Action = ["iam:PassRole"]
+        Sid      = "IAMPassRole"
+        Effect   = "Allow"
+        Action   = ["iam:PassRole"]
         Resource = "arn:aws:iam::*:role/tunnix-${var.environment}-ecs-task-execution"
       },
     ]

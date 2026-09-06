@@ -12,13 +12,11 @@ terraform {
     key     = "prod/terraform.tfstate"
     region  = "ap-southeast-1"
     encrypt = true
-    profile = "account2"
   }
 }
 
 provider "aws" {
-  region  = var.aws_region
-  profile = "account2"
+  region = var.aws_region
   default_tags {
     tags = {
       Project     = "tunnix"

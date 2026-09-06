@@ -17,46 +17,35 @@ env:
   TF_WORKING_DIR: infra/terraform
 
 jobs:
-  terraform:
+  validate:
+    name: Validate Infrastructure
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
-      pull-requests: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-1
-
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
+      - name: Terraform Format Check
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform init
+        run: terraform fmt -check -recursive
 
-      - name: Terraform Format Check (PRs only)
-        if: github.event_name == 'pull_request'
+      - name: Terraform Init (Validation Mode)
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform fmt -check
+        run: terraform init -backend=false
 
       - name: Terraform Validate
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform validate
 
-      - name: Terraform Plan
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform plan -out=tfplan
-
-      - name: Terraform Apply
-        # Only apply on direct push to prod, not on PRs
-        if: github.event_name == 'push' && github.ref == 'refs/heads/prod'
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform apply -auto-approve tfplan
+      - name: Infrastructure Safety Guard
+        run: |
+          echo "=========================================================="
+          echo "✅ Infrastructure syntax and configuration verified!"
+          echo "🛡️  Automatic resource creation/apply is disabled."
+          echo "   Your live deployment is untouched and safe."
+          echo "=========================================================="

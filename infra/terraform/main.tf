@@ -8,9 +8,9 @@ locals {
 module "iam" {
   source = "./modules/iam"
 
-  github_org   = var.github_org
-  github_repo  = var.github_repo
-  environment  = var.environment
+  github_org  = var.github_org
+  github_repo = var.github_repo
+  environment = var.environment
 }
 
 # ── EC2: Host instance, security group, EBS data volume, Elastic IP ───────────
@@ -37,12 +37,12 @@ module "ecr" {
 module "ecs" {
   source = "./modules/ecs"
 
-  aws_region       = var.aws_region
-  environment      = var.environment
-  ecr_server_image = "${module.ecr.server_repository_url}:latest"
+  aws_region        = var.aws_region
+  environment       = var.environment
+  ecr_server_image  = "${module.ecr.server_repository_url}:latest"
   ecr_gateway_image = "${module.ecr.gateway_repository_url}:latest"
-  ec2_instance_id  = module.ec2.instance_id
-  ssm_path_prefix  = "/tunnix/${var.environment}"
+  ec2_instance_id   = module.ec2.instance_id
+  ssm_path_prefix   = "/tunnix/${var.environment}"
 }
 
 # ── S3: Agent binary downloads + DB backup buckets ────────────────────────────
@@ -57,8 +57,8 @@ module "s3" {
 module "ssm" {
   source = "./modules/ssm"
 
-  environment           = var.environment
-  ec2_public_ip         = module.ec2.eip_public_ip
+  environment            = var.environment
+  ec2_public_ip          = module.ec2.eip_public_ip
   amplify_default_domain = module.amplify.default_domain
 }
 
