@@ -436,9 +436,9 @@ export function adminBlockSubdomain(input: {
   db.exec("BEGIN");
   try {
     db.query(
-      `INSERT INTO blocked_subdomains (id, subdomain, reason, blocked_by_user_id, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-    ).run(id, input.subdomain, input.reason ?? null, input.blockedByUserId, now, now);
+      `INSERT INTO blocked_subdomains (id, subdomain, reason, blocked_by_user_id, created_at)
+       VALUES (?, ?, ?, ?, ?)`,
+    ).run(id, input.subdomain, input.reason ?? null, input.blockedByUserId, now);
 
     // Release all active reservations for this subdomain
     const released = db

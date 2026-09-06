@@ -88,18 +88,20 @@ export const ActiveTunnelsPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {tunnels.map((t) => (
-                  <tr key={t.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <td style={{ padding: "0.75rem 1rem", fontWeight: 600 }}>
-                      <a
-                        href={t.public_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{ color: "#38bdf8", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
-                      >
-                        {t.subdomain}.tunnix.local <ExternalLink size={14} />
-                      </a>
-                    </td>
+                {tunnels.map((t) => {
+                  const publicUrl = t.public_url || `http://${t.subdomain}.47.130.245.232.sslip.io`;
+                  return (
+                    <tr key={t.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      <td style={{ padding: "0.75rem 1rem", fontWeight: 600 }}>
+                        <a
+                          href={publicUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ color: "#38bdf8", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
+                        >
+                          {t.subdomain} <ExternalLink size={14} />
+                        </a>
+                      </td>
                     <td style={{ padding: "0.75rem 1rem" }}>
                       <code className="font-mono">localhost:{t.local_port}</code>
                     </td>
@@ -119,8 +121,9 @@ export const ActiveTunnelsPage: React.FC = () => {
                         <PowerOff size={15} /> Disconnect
                       </button>
                     </td>
-                  </tr>
-                ))}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

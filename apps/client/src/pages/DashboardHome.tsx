@@ -137,22 +137,25 @@ export const DashboardHome: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {activeTunnels.map((t) => (
-                  <tr key={t.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <td style={{ padding: "0.75rem 1rem", fontWeight: 600, color: "#38bdf8" }}>
-                      <a href={t.public_url} target="_blank" rel="noreferrer" style={{ color: "#38bdf8", textDecoration: "none" }}>
-                        {t.subdomain}.tunnix.local
-                      </a>
-                    </td>
-                    <td style={{ padding: "0.75rem 1rem" }}>localhost:{t.local_port}</td>
-                    <td style={{ padding: "0.75rem 1rem" }}>
-                      <span className="badge badge-active">
-                        <span className="pulse-dot"></span> Active
-                      </span>
-                    </td>
-                    <td style={{ padding: "0.75rem 1rem", color: "#94a3b8" }}>{new Date(t.created_at).toLocaleString()}</td>
-                  </tr>
-                ))}
+                {activeTunnels.map((t) => {
+                  const publicUrl = t.public_url || `http://${t.subdomain}.47.130.245.232.sslip.io`;
+                  return (
+                    <tr key={t.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      <td style={{ padding: "0.75rem 1rem", fontWeight: 600 }}>
+                        <a href={publicUrl} target="_blank" rel="noreferrer" style={{ color: "#38bdf8", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                          {t.subdomain} <ArrowUpRight size={14} />
+                        </a>
+                      </td>
+                      <td style={{ padding: "0.75rem 1rem" }}>localhost:{t.local_port || "—"}</td>
+                      <td style={{ padding: "0.75rem 1rem" }}>
+                        <span className="badge badge-active">
+                          <span className="pulse-dot"></span> Active
+                        </span>
+                      </td>
+                      <td style={{ padding: "0.75rem 1rem", color: "#94a3b8" }}>{new Date(t.created_at).toLocaleString()}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

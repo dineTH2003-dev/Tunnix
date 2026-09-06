@@ -65,7 +65,7 @@ export const SubdomainsPage: React.FC = () => {
       <div style={{ marginBottom: "2rem" }}>
         <h1 style={{ fontSize: "1.75rem", fontWeight: 700 }}>Custom Subdomains</h1>
         <p style={{ color: "#94a3b8", marginTop: 4 }}>
-          Reserve dedicated subdomains on <code>tunnix.local</code> for consistent tunnel URLs.
+          Reserve dedicated subdomains on <code>47.130.245.232.sslip.io</code> for consistent tunnel URLs.
         </p>
       </div>
 
@@ -91,7 +91,7 @@ export const SubdomainsPage: React.FC = () => {
               style={{ borderRadius: "8px 0 0 8px" }}
             />
             <span style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", borderLeft: "none", padding: "0.65rem 1rem", borderRadius: "0 8px 8px 0", color: "#94a3b8", fontSize: "0.9rem" }}>
-              .tunnix.local
+              .47.130.245.232.sslip.io
             </span>
           </div>
 
