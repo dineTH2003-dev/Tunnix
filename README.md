@@ -115,6 +115,7 @@ Tunnix/
 ## 📚 Documentation Links
 
 - [System Architecture Specification](docs/ARCHITECTURE.md)
+- [Cloud & Deployment Architecture Specification](docs/DEPLOYMENT.md)
 - [API Endpoints & CLI Reference](docs/API_REFERENCE.md)
 - [Administrator & Operator Manual](docs/ADMIN_GUIDE.md)
 - [End-to-End User Manual](docs/USER_MANUAL.md)
