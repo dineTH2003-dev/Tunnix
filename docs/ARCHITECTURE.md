@@ -6,6 +6,8 @@ Tunnix is a self-hosted, developer-first tunneling platform that securely expose
 
 ## High-Level Architecture Overview
 
+![Tunnix High-Level Platform Architecture](images/tunnix-architecture.png)
+
 The system consists of four primary components:
 
 ```mermaid

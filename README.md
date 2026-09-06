@@ -23,6 +23,11 @@
 
 ## 🏗️ System Architecture
 
+![Tunnix High-Level Platform Architecture](docs/images/tunnix-architecture.png)
+
+<details>
+<summary><b>View Component Sequence Flowchart</b></summary>
+
 ```mermaid
 flowchart TD
     Client["React Dashboard (SPA)<br/>:3000 / :443"] -->|"REST / JWT"| ControlPlane["Server API (Hono / Bun)<br/>:4310"]
@@ -34,6 +39,8 @@ flowchart TD
     Gateway <-->|"Tunnel Multiplexing"| Agent
     Agent <-->|"Local HTTP Forward"| LocalApp["Developer App<br/>localhost:port"]
 ```
+
+</details>
 
 ---
 
