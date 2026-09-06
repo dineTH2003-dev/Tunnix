@@ -38,7 +38,7 @@ export const env = {
 
   // Email
   BREVO_API_KEY: optionalEnv("BREVO_API_KEY", ""),
-  EMAIL_FROM_ADDRESS: optionalEnv("EMAIL_FROM_ADDRESS", "noreply@tunnix.local"),
+  EMAIL_FROM_ADDRESS: optionalEnv("EMAIL_FROM_ADDRESS", "dinethdilshan64@gmail.com"),
 
   // Turnstile
   TURNSTILE_SECRET_KEY: optionalEnv("TURNSTILE_SECRET_KEY", ""),
