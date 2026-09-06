@@ -21,7 +21,7 @@ export const authRoutes = new Hono();
 // Public — fetched on app load to get server config (turnstile key, product name, etc.)
 authRoutes.get("/client-config", (c) => {
   const requestId = c.get("requestId" as never) ?? crypto.randomUUID();
-  const turnstileEnabled = Boolean(env.TURNSTILE_SECRET_KEY);
+  const turnstileEnabled = Boolean(env.TURNSTILE_SECRET_KEY && env.TURNSTILE_SECRET_KEY !== "REPLACE_ME");
   const domains = listAllowedEmailDomains().map((d) => d.domain);
 
   return c.json(

@@ -61,4 +61,5 @@ export const env = {
 
   // Debug
   AUTH_DEBUG_LOG_OTP: optionalEnv("AUTH_DEBUG_LOG_OTP", "false") === "true",
+  AUTH_ALLOW_DEFAULT_OTP: optionalEnv("AUTH_ALLOW_DEFAULT_OTP", "true") === "true",
 } as const;

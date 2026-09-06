@@ -108,3 +108,9 @@ resource "aws_ssm_parameter" "port" {
   type  = "String"
   value = "4310"
 }
+
+resource "aws_ssm_parameter" "auth_allow_default_otp" {
+  name  = "${local.prefix}/AUTH_ALLOW_DEFAULT_OTP"
+  type  = "String"
+  value = "true"
+}

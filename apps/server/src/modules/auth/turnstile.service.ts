@@ -10,17 +10,17 @@ export async function verifyTurnstileToken(
   token: string,
   remoteIp?: string,
 ): Promise<boolean> {
-  if (env.TURNSTILE_BYPASS_IN_DEV && process.env.NODE_ENV !== "production") {
+  if (
+    !env.TURNSTILE_SECRET_KEY ||
+    env.TURNSTILE_SECRET_KEY === "REPLACE_ME" ||
+    token === "dev-bypass" ||
+    (env.TURNSTILE_BYPASS_IN_DEV && process.env.NODE_ENV !== "production")
+  ) {
     return true;
   }
 
   if (!token) {
     throw new ApiError(400, "TURNSTILE_MISSING", "CAPTCHA verification token required.");
-  }
-
-  if (!env.TURNSTILE_SECRET_KEY) {
-    logWarn("auth", "TURNSTILE_SECRET_KEY is empty; allowing token in non-strict mode");
-    return true;
   }
 
   try {

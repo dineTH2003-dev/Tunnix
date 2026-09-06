@@ -6,8 +6,8 @@ import { logInfo, logWarn } from "../../core/logging";
  * Logs code if API key is not configured or in dev mode.
  */
 export async function sendOtpEmail(email: string, otp: string): Promise<boolean> {
-  if (!env.BREVO_API_KEY) {
-    logWarn("email", `BREVO_API_KEY missing. OTP email to ${email} suppressed. (OTP: ${otp})`);
+  if (!env.BREVO_API_KEY || env.BREVO_API_KEY === "REPLACE_ME") {
+    logWarn("email", `BREVO_API_KEY not configured. OTP email to ${email} suppressed. (OTP: ${otp})`);
     return true;
   }
 
