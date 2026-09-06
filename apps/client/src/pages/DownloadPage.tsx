@@ -10,9 +10,14 @@ export const DownloadPage: React.FC = () => {
     setTimeout(() => setCopiedOs(null), 2000);
   };
 
-  const winScript = "iwr -useb http://localhost:4310/v1/download/install.ps1 | iex";
-  const linuxScript = "curl -fsSL http://localhost:4310/v1/download/install.sh | sh";
-  const macScript = "curl -fsSL http://localhost:4310/v1/download/install.sh | sh";
+  const apiBase = (
+    import.meta.env.VITE_API_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "")
+  ).replace(/\/+$/, "");
+
+  const winScript = `iwr -useb ${apiBase}/v1/download/install.ps1 | iex`;
+  const linuxScript = `curl -fsSL ${apiBase}/v1/download/install.sh | sh`;
+  const macScript = `curl -fsSL ${apiBase}/v1/download/install.sh | sh`;
 
   return (
     <div>
@@ -44,7 +49,7 @@ export const DownloadPage: React.FC = () => {
                 Download standalone <code>tunnix.exe</code> binary to your Downloads folder and run manually.
               </p>
               <a
-                href="http://localhost:4310/v1/download/windows"
+                href={`${apiBase}/v1/download/windows`}
                 download="tunnix-windows-amd64.exe"
                 className="btn-primary"
                 id="btn-download-win-exe"
@@ -94,7 +99,7 @@ export const DownloadPage: React.FC = () => {
                 Download standalone executable binary to run manually on Linux servers or desktop.
               </p>
               <a
-                href="http://localhost:4310/v1/download/linux"
+                href={`${apiBase}/v1/download/linux`}
                 download="tunnix-linux-amd64"
                 className="btn-primary"
                 id="btn-download-linux-bin"
@@ -144,7 +149,7 @@ export const DownloadPage: React.FC = () => {
                 Download standalone macOS executable binary for Apple Silicon / Intel Mac.
               </p>
               <a
-                href="http://localhost:4310/v1/download/mac"
+                href={`${apiBase}/v1/download/mac`}
                 download="tunnix-darwin-arm64"
                 className="btn-primary"
                 id="btn-download-mac-bin"

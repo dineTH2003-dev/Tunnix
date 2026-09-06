@@ -58,6 +58,13 @@ func (s *HTTPServer) extractSubdomain(hostHeader string) string {
 }
 
 func (s *HTTPServer) handleHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/health" {
+		w.Header().Set("Content-Type", "text/plain")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("ok"))
+		return
+	}
+
 	subdomain := s.extractSubdomain(r.Host)
 
 	// Fallback to query param or X-Forwarded-Subdomain if host doesn't match wildcard

@@ -148,6 +148,22 @@ resource "aws_ecs_task_definition" "server" {
           name      = "TURNSTILE_SECRET_KEY"
           valueFrom = "${var.ssm_path_prefix}/TURNSTILE_SECRET_KEY"
         },
+        {
+          name      = "GATEWAY_WS_URL"
+          valueFrom = "${var.ssm_path_prefix}/GATEWAY_WS_URL"
+        },
+        {
+          name      = "GATEWAY_PUBLIC_BASE_URL"
+          valueFrom = "${var.ssm_path_prefix}/GATEWAY_PUBLIC_BASE_URL"
+        },
+        {
+          name      = "WILDCARD_BASE_DOMAIN"
+          valueFrom = "${var.ssm_path_prefix}/WILDCARD_BASE_DOMAIN"
+        },
+        {
+          name      = "CORS_ORIGIN"
+          valueFrom = "${var.ssm_path_prefix}/CORS_ORIGIN"
+        },
       ]
 
       logConfiguration = {
@@ -200,6 +216,7 @@ resource "aws_ecs_task_definition" "gateway" {
       environment = [
         { name = "GATEWAY_HTTP_PORT", value = "8080" },
         { name = "GATEWAY_WS_PORT",   value = "9000" },
+        { name = "SERVER_API_URL",    value = "http://172.17.0.1:4310" },
         { name = "LOG_LEVEL",         value = "info" },
       ]
 
@@ -207,6 +224,14 @@ resource "aws_ecs_task_definition" "gateway" {
         {
           name      = "INTERNAL_GATEWAY_SECRET"
           valueFrom = "${var.ssm_path_prefix}/INTERNAL_GATEWAY_SECRET"
+        },
+        {
+          name      = "TUNNEL_GRANT_SECRET"
+          valueFrom = "${var.ssm_path_prefix}/TUNNEL_GRANT_SECRET"
+        },
+        {
+          name      = "WILDCARD_DOMAIN"
+          valueFrom = "${var.ssm_path_prefix}/WILDCARD_BASE_DOMAIN"
         },
         {
           name      = "CONTROL_PLANE_URL"

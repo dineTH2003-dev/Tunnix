@@ -26,28 +26,31 @@ func getConfigPath() (string, error) {
 	return filepath.Join(dir, "config.json"), nil
 }
 
+const DefaultServerURL = "https://47.130.245.232.sslip.io"
+
 func Load() (*Config, error) {
 	path, err := getConfigPath()
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := os.ReadFile(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return &Config{ServerURL: "http://localhost:4310"}, nil
-		}
-		return nil, err
+	cfg := &Config{
+		ServerURL: DefaultServerURL,
 	}
 
-	var cfg Config
-	if err := json.Unmarshal(data, &cfg); err != nil {
-		return nil, err
+	data, err := os.ReadFile(path)
+	if err == nil {
+		_ = json.Unmarshal(data, cfg)
 	}
-	if cfg.ServerURL == "" {
-		cfg.ServerURL = "http://localhost:4310"
+
+	// Environment variable overrides file config
+	if envURL := os.Getenv("TUNNIX_SERVER_URL"); envURL != "" {
+		cfg.ServerURL = envURL
+	} else if cfg.ServerURL == "" || cfg.ServerURL == "http://localhost:4310" {
+		cfg.ServerURL = DefaultServerURL
 	}
-	return &cfg, nil
+
+	return cfg, nil
 }
 
 func Save(cfg *Config) error {

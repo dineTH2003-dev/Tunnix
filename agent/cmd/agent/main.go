@@ -33,6 +33,8 @@ func main() {
 		handleLogin(cfg)
 	case "http":
 		handleHTTP(cfg)
+	case "config":
+		handleConfig(cfg)
 	case "version":
 		fmt.Printf("tunnix CLI v%s\n", CLI_VERSION)
 	case "help", "-h", "--help":
@@ -47,20 +49,83 @@ func main() {
 func printUsage() {
 	fmt.Println("Tunnix CLI - Expose local servers to the internet securely")
 	fmt.Println("\nUsage:")
-	fmt.Println("  tunnix login <agent-token>      Authenticate CLI with your agent token")
-	fmt.Println("  tunnix http <port> [--subdomain name]   Expose local port to the internet")
-	fmt.Println("  tunnix version                  Show CLI version")
-	fmt.Println("  tunnix help                     Show help instructions")
+	fmt.Println("  tunnix login <agent-token> [--server <url>]       Authenticate CLI with your agent token")
+	fmt.Println("  tunnix http <port> [--subdomain name] [--server]  Expose local port to the internet")
+	fmt.Println("  tunnix config get                                 Show current configuration")
+	fmt.Println("  tunnix config set server <url>                    Set default control plane URL")
+	fmt.Println("  tunnix version                                    Show CLI version")
+	fmt.Println("  tunnix help                                       Show help instructions")
 }
 
-func handleLogin(cfg *config.Config) {
+func handleConfig(cfg *config.Config) {
 	if len(os.Args) < 3 {
-		fmt.Println("Error: Agent token is required.")
-		fmt.Println("Usage: tunnix login <agent-token>")
+		fmt.Println("Usage: tunnix config <get|set> [key] [value]")
 		os.Exit(1)
 	}
 
-	token := os.Args[2]
+	subCmd := os.Args[2]
+	if subCmd == "get" {
+		fmt.Println("Tunnix Configuration:")
+		fmt.Printf("  Server URL:    %s\n", cfg.ServerURL)
+		fmt.Printf("  User Email:    %s\n", cfg.UserEmail)
+		fmt.Printf("  Gateway WS:    %s\n", cfg.GatewayWsUrl)
+		maskedToken := "(none)"
+		if len(cfg.AgentToken) > 12 {
+			maskedToken = cfg.AgentToken[:10] + "..." + cfg.AgentToken[len(cfg.AgentToken)-4:]
+		}
+		fmt.Printf("  Agent Token:   %s\n", maskedToken)
+		return
+	}
+
+	if subCmd == "set" {
+		if len(os.Args) < 5 {
+			fmt.Println("Usage: tunnix config set <key> <value>")
+			fmt.Println("Example: tunnix config set server https://47.130.245.232.sslip.io")
+			os.Exit(1)
+		}
+		key := os.Args[3]
+		val := os.Args[4]
+		if key == "server" || key == "serverUrl" {
+			cfg.ServerURL = val
+			if err := config.Save(cfg); err != nil {
+				fmt.Printf("Error saving config: %v\n", err)
+				os.Exit(1)
+			}
+			fmt.Printf("✅ Updated server URL to %s\n", val)
+			return
+		}
+		fmt.Printf("Unknown config key: %s. Supported keys: server\n", key)
+		os.Exit(1)
+	}
+
+	fmt.Printf("Unknown config action: %s\n", subCmd)
+}
+
+func handleLogin(cfg *config.Config) {
+	var token string
+	var serverURL string
+
+	for i := 2; i < len(os.Args); i++ {
+		arg := os.Args[i]
+		if (arg == "--server" || arg == "-s") && i+1 < len(os.Args) {
+			serverURL = os.Args[i+1]
+			i++
+		} else if token == "" && arg[0] != '-' {
+			token = arg
+		}
+	}
+
+	if token == "" {
+		fmt.Println("Error: Agent token is required.")
+		fmt.Println("Usage: tunnix login <agent-token> [--server <url>]")
+		os.Exit(1)
+	}
+
+	if serverURL != "" {
+		cfg.ServerURL = serverURL
+	}
+
+	fmt.Printf("Connecting to control plane at %s ...\n", cfg.ServerURL)
 	client := api.NewAPIClient(cfg.ServerURL)
 
 	res, err := client.AgentLogin(token)
@@ -91,25 +156,37 @@ func handleHTTP(cfg *config.Config) {
 		os.Exit(1)
 	}
 
-	if len(os.Args) < 3 {
+	var portStr string
+	var requestedSubdomain string
+	var serverURL string
+
+	for i := 2; i < len(os.Args); i++ {
+		arg := os.Args[i]
+		if (arg == "--subdomain" || arg == "-s") && i+1 < len(os.Args) {
+			requestedSubdomain = os.Args[i+1]
+			i++
+		} else if arg == "--server" && i+1 < len(os.Args) {
+			serverURL = os.Args[i+1]
+			i++
+		} else if portStr == "" && arg[0] != '-' {
+			portStr = arg
+		}
+	}
+
+	if portStr == "" {
 		fmt.Println("Error: Local port is required.")
-		fmt.Println("Usage: tunnix http <port> [--subdomain name]")
+		fmt.Println("Usage: tunnix http <port> [--subdomain name] [--server <url>]")
 		os.Exit(1)
 	}
 
-	portStr := os.Args[2]
 	port, err := strconv.Atoi(portStr)
 	if err != nil || port < 1 || port > 65535 {
 		fmt.Printf("Error: Invalid port number '%s'. Must be 1-65535.\n", portStr)
 		os.Exit(1)
 	}
 
-	var requestedSubdomain string
-	for i := 3; i < len(os.Args); i++ {
-		if (os.Args[i] == "--subdomain" || os.Args[i] == "-s") && i+1 < len(os.Args) {
-			requestedSubdomain = os.Args[i+1]
-			break
-		}
+	if serverURL != "" {
+		cfg.ServerURL = serverURL
 	}
 
 	client := api.NewAPIClient(cfg.ServerURL)
