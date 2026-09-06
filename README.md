@@ -122,6 +122,16 @@ Tunnix/
 
 ---
 
+## ☁️ Cloud & Deployment Architecture
+
+Tunnix's production cloud infrastructure features an edge-accelerated, containerized topology powered by Amazon CloudFront (global agent CLI binary caching), AWS Amplify (React SPA delivery), and an AWS EC2 ingress host running Nginx, Go packet multiplexing, Bun/Hono control plane, and persistent EBS SQLite storage.
+
+![Tunnix Cloud & Production Deployment Architecture](docs/images/tunnix-deployment-architecture.png)
+
+For complete technical specifications, see the [Cloud & Deployment Architecture Specification](docs/DEPLOYMENT.md).
+
+---
+
 ## 📄 License
 
 Distributed under the [MIT License](LICENSE).

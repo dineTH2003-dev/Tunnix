@@ -8,6 +8,8 @@ This document provides a comprehensive technical guide to the production deploym
 
 Tunnix uses a hybrid cloud topology designed for zero-latency tunneling throughput, global edge delivery, and secure containerized process isolation.
 
+![Tunnix Cloud & Production Deployment Architecture](images/tunnix-deployment-architecture.png)
+
 ```mermaid
 flowchart TD
     subgraph Users ["Client & User Layer"]
