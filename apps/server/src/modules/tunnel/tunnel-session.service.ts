@@ -114,13 +114,19 @@ export async function issueTunnelSession(params: {
 
     // Check if currently active in another session
     const activeSession = db
-      .query<{ id: string }, [string]>(
-        "SELECT id FROM tunnel_sessions WHERE subdomain = ? AND status IN ('pending', 'active')",
+      .query<{ id: string; user_id: string; status: string }, [string]>(
+        "SELECT id, user_id, status FROM tunnel_sessions WHERE subdomain = ? AND status IN ('pending', 'active')",
       )
       .get(subdomain);
 
     if (activeSession) {
-      throw new ApiError(409, "SUBDOMAIN_IN_USE", "Subdomain is currently active in another tunnel.");
+      if (activeSession.status === "pending" || activeSession.user_id === agent.userId) {
+        db.query(
+          "UPDATE tunnel_sessions SET status = 'disconnected', disconnected_at = datetime('now') WHERE id = ?",
+        ).run(activeSession.id);
+      } else {
+        throw new ApiError(409, "SUBDOMAIN_IN_USE", "Subdomain is currently active in another tunnel.");
+      }
     }
   } else {
     // Generate unique random subdomain
