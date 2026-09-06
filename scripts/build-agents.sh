@@ -24,8 +24,11 @@ GO_BIN="$(command -v go || echo "/home/dineth/go_sdk/go/bin/go")"
 for target in "${PLATFORMS[@]}"; do
   IFS="/" read -r GOOS GOARCH OUTNAME <<< "$target"
   echo "  --> Compiling $GOOS/$GOARCH..."
-  GOOS=$GOOS GOARCH=$GOARCH "$GO_BIN" build -ldflags="-s -w" -o "$DIST_DIR/$OUTNAME" ./cmd/agent
+  CGO_ENABLED=0 GOOS=$GOOS GOARCH=$GOARCH "$GO_BIN" build -ldflags="-s -w" -o "$DIST_DIR/$OUTNAME" ./cmd/agent
 done
+
+mkdir -p "$ROOT_DIR/apps/server/dist/agents"
+cp -f "$DIST_DIR"/* "$ROOT_DIR/apps/server/dist/agents/"
 
 echo "✅ All agent binaries built successfully in $DIST_DIR:"
 ls -lh "$DIST_DIR"

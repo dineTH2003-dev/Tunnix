@@ -55,7 +55,7 @@ export const DownloadPage: React.FC = () => {
                 id="btn-download-win-exe"
                 style={{ width: "100%", justifyContent: "center", padding: "0.6rem", fontSize: "0.85rem", textDecoration: "none", background: "linear-gradient(135deg, #c084fc 0%, #6366f1 100%)" }}
               >
-                <Download size={16} /> Download tunnix.exe (8.0 MB)
+                <Download size={16} /> Download tunnix.exe (5.5 MB)
               </a>
             </div>
 
@@ -105,7 +105,7 @@ export const DownloadPage: React.FC = () => {
                 id="btn-download-linux-bin"
                 style={{ width: "100%", justifyContent: "center", padding: "0.6rem", fontSize: "0.85rem", textDecoration: "none" }}
               >
-                <Download size={16} /> Download Linux Binary (8.0 MB)
+                <Download size={16} /> Download Linux Binary (5.4 MB)
               </a>
             </div>
 
@@ -155,7 +155,7 @@ export const DownloadPage: React.FC = () => {
                 id="btn-download-mac-bin"
                 style={{ width: "100%", justifyContent: "center", padding: "0.6rem", fontSize: "0.85rem", textDecoration: "none", backgroundColor: "#6366f1" }}
               >
-                <Download size={16} /> Download macOS Binary (7.6 MB)
+                <Download size={16} /> Download macOS Binary (5.3 MB)
               </a>
             </div>
 

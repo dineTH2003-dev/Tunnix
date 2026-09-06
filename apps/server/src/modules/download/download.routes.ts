@@ -20,6 +20,21 @@ const PLATFORM_MAP: Record<string, { filename: string; contentType: string; labe
   "mac-intel": { filename: "tunnix-darwin-amd64", contentType: "application/octet-stream", label: "macOS (Intel)", platformKey: "mac-intel" },
 };
 
+function resolveAgentBinary(filename: string): string | null {
+  const candidates = [
+    join(process.cwd(), "../../dist/agents", filename),
+    join(process.cwd(), "../dist/agents", filename),
+    join(process.cwd(), "dist/agents", filename),
+    join(process.cwd(), "apps/server/dist/agents", filename),
+    join(__dirname, "../../../../../dist/agents", filename),
+    join(__dirname, "../../../../dist/agents", filename),
+  ];
+  for (const c of candidates) {
+    if (existsSync(c)) return c;
+  }
+  return null;
+}
+
 /** Serve automated PowerShell installer script for Windows */
 downloadRoutes.get("/install.ps1", (c) => {
   const host = c.req.header("host") || "localhost:4310";
@@ -108,17 +123,12 @@ downloadRoutes.get("/platforms", async (c) => {
     }
   }
 
-  const distDir = join(process.cwd(), "../../dist/agents");
-  const localDistDir = join(process.cwd(), "dist/agents");
-
   const platforms = Object.entries(PLATFORM_MAP)
     .filter(([key]) => ["linux-amd64", "darwin-arm64", "windows-amd64"].includes(key))
     .map(([key, config]) => {
-      let filePath = join(distDir, config.filename);
-      if (!existsSync(filePath)) filePath = join(localDistDir, config.filename);
-
+      const filePath = resolveAgentBinary(config.filename);
       const isAllowed = allowedPlatforms.includes(config.platformKey);
-      const isCompiled = existsSync(filePath);
+      const isCompiled = filePath !== null;
 
       return {
         platform: key,
@@ -167,15 +177,8 @@ downloadRoutes.get("/:platform", async (c) => {
     }
   }
 
-  const distDir = join(process.cwd(), "../../dist/agents");
-  const localDistDir = join(process.cwd(), "dist/agents");
-  let filePath = join(distDir, config.filename);
-
-  if (!existsSync(filePath)) {
-    filePath = join(localDistDir, config.filename);
-  }
-
-  if (!existsSync(filePath)) {
+  const filePath = resolveAgentBinary(config.filename);
+  if (!filePath) {
     throw new ApiError(404, "NOT_FOUND", `Binary for platform '${platform}' not compiled on server.`);
   }
 
