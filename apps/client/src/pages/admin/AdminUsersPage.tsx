@@ -11,6 +11,7 @@ interface UserRecord {
   name: string | null;
   max_tunnels: number;
   max_subdomains: number;
+  allowed_platforms?: string;
   created_at: string;
 }
 
@@ -22,7 +23,7 @@ export const AdminUsersPage: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const data = await apiRequest<any>("/v1/admin/users");
-      const items = Array.isArray(data) ? data : data?.items || [];
+      const items = Array.isArray(data) ? data : data?.users ?? data?.items ?? [];
       setUsers(items);
     } catch {
       setUsers([]);
@@ -50,11 +51,16 @@ export const AdminUsersPage: React.FC = () => {
     if (!editingUser) return;
 
     try {
+      const allowed = editingUser.allowed_platforms
+        ? editingUser.allowed_platforms.split(",").map((p) => p.trim()).filter(Boolean)
+        : ["windows", "linux", "mac", "mac-intel"];
+
       await apiRequest(`/v1/admin/users/${editingUser.id}/limits`, {
         method: "PATCH",
         body: JSON.stringify({
-          maxTunnels: editingUser.max_tunnels,
-          maxSubdomains: editingUser.max_subdomains,
+          maxTunnels: Number(editingUser.max_tunnels),
+          maxSubdomains: Number(editingUser.max_subdomains),
+          allowedPlatforms: allowed.length > 0 ? allowed : ["windows", "linux", "mac", "mac-intel"],
         }),
       });
       setEditingUser(null);

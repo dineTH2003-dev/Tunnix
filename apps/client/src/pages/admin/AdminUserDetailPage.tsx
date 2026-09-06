@@ -62,8 +62,8 @@ export const AdminUserDetailPage: React.FC = () => {
       setEditStatus(u.status);
       setEditMaxTunnels(u.max_tunnels ?? 3);
       setEditMaxSubdomains(u.max_subdomains ?? 3);
-      setTokens(data?.agentTokens ?? []);
-      setTunnels(data?.tunnelSessions ?? []);
+      setTokens(data?.tokens ?? data?.agentTokens ?? []);
+      setTunnels(data?.sessions ?? data?.tunnelSessions ?? []);
     } catch {
       setUser(null);
     } finally {
@@ -96,9 +96,17 @@ export const AdminUserDetailPage: React.FC = () => {
   const handleSaveLimits = async () => {
     setSaving(true);
     try {
+      const allowed = user?.allowed_platforms
+        ? user.allowed_platforms.split(",").map((p) => p.trim()).filter(Boolean)
+        : ["windows", "linux", "mac", "mac-intel"];
+
       await apiRequest(`/v1/admin/users/${id}/limits`, {
         method: "PATCH",
-        body: JSON.stringify({ maxTunnels: editMaxTunnels, maxSubdomains: editMaxSubdomains }),
+        body: JSON.stringify({
+          maxTunnels: Number(editMaxTunnels),
+          maxSubdomains: Number(editMaxSubdomains),
+          allowedPlatforms: allowed.length > 0 ? allowed : ["windows", "linux", "mac", "mac-intel"],
+        }),
       });
       fetchUser();
     } catch (err: any) {
@@ -109,7 +117,7 @@ export const AdminUserDetailPage: React.FC = () => {
   const handleRevokeToken = async (tokenId: string) => {
     if (!confirm("Revoke this agent token?")) return;
     try {
-      await apiRequest(`/v1/admin/agent-tokens/${tokenId}/revoke`, { method: "DELETE" });
+      await apiRequest(`/v1/admin/agent-tokens/${tokenId}`, { method: "DELETE" });
       fetchUser();
     } catch (err: any) {
       alert(err.message || "Failed to revoke token.");

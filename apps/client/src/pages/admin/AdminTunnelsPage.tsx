@@ -7,8 +7,8 @@ export const AdminTunnelsPage: React.FC = () => {
 
   const fetchActiveTunnels = async () => {
     try {
-      const data = await apiRequest<any>("/v1/admin/tunnels/active");
-      const items = Array.isArray(data) ? data : data?.items || [];
+      const data = await apiRequest<any>("/v1/admin/tunnels?status=active");
+      const items = Array.isArray(data) ? data : data?.items ?? [];
       setActiveTunnels(items);
     } catch {
       setActiveTunnels([]);
@@ -22,7 +22,7 @@ export const AdminTunnelsPage: React.FC = () => {
   const handleForceDisconnect = async (sessionId: string) => {
     if (!confirm("Force disconnect this active tunnel across the network?")) return;
     try {
-      await apiRequest(`/v1/admin/tunnels/${sessionId}/disconnect`, { method: "POST" });
+      await apiRequest(`/v1/admin/tunnels/${sessionId}/revoke`, { method: "POST" });
       fetchActiveTunnels();
     } catch (err: any) {
       alert(err.message || "Failed to disconnect tunnel.");
@@ -49,26 +49,38 @@ export const AdminTunnelsPage: React.FC = () => {
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.1)", color: "#64748b" }}>
                   <th style={{ padding: "0.75rem 1rem" }}>User Email</th>
-                  <th style={{ padding: "0.75rem 1rem" }}>Subdomain</th>
+                  <th style={{ padding: "0.75rem 1rem" }}>Subdomain / Public URL</th>
                   <th style={{ padding: "0.75rem 1rem" }}>Target Port</th>
                   <th style={{ padding: "0.75rem 1rem" }}>Connected At</th>
                   <th style={{ padding: "0.75rem 1rem", textAlign: "right" }}>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {activeTunnels.map((t) => (
-                  <tr key={t.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <td style={{ padding: "0.75rem 1rem", fontWeight: 600 }}>{t.user_email || t.user_id}</td>
-                    <td style={{ padding: "0.75rem 1rem", color: "#38bdf8" }}>{t.subdomain}.tunnix.local</td>
-                    <td style={{ padding: "0.75rem 1rem" }}>localhost:{t.local_port}</td>
-                    <td style={{ padding: "0.75rem 1rem", color: "#94a3b8" }}>{new Date(t.created_at).toLocaleString()}</td>
-                    <td style={{ padding: "0.75rem 1rem", textAlign: "right" }}>
-                      <button onClick={() => handleForceDisconnect(t.id)} className="btn-danger" style={{ padding: "0.35rem 0.6rem" }}>
-                        <PowerOff size={15} /> Force Disconnect
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {activeTunnels.map((t) => {
+                  const publicUrl = t.public_url || `http://${t.subdomain}.47.130.245.232.sslip.io`;
+                  return (
+                    <tr key={t.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                      <td style={{ padding: "0.75rem 1rem", fontWeight: 600 }}>{t.user_email || t.user_id}</td>
+                      <td style={{ padding: "0.75rem 1rem" }}>
+                        <a
+                          href={publicUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ color: "#38bdf8", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
+                        >
+                          {t.subdomain} <ExternalLink size={13} />
+                        </a>
+                      </td>
+                      <td style={{ padding: "0.75rem 1rem" }}>localhost:{t.local_port || "—"}</td>
+                      <td style={{ padding: "0.75rem 1rem", color: "#94a3b8" }}>{new Date(t.created_at).toLocaleString()}</td>
+                      <td style={{ padding: "0.75rem 1rem", textAlign: "right" }}>
+                        <button onClick={() => handleForceDisconnect(t.id)} className="btn-danger" style={{ padding: "0.35rem 0.6rem" }}>
+                          <PowerOff size={15} /> Force Disconnect
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

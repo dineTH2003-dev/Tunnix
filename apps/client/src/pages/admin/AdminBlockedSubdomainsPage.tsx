@@ -21,7 +21,7 @@ export const AdminBlockedSubdomainsPage: React.FC = () => {
     setLoading(true);
     try {
       const data = await apiRequest<any>("/v1/admin/blocked-subdomains");
-      const items = Array.isArray(data) ? data : data?.items ?? data?.blockedSubdomains ?? [];
+      const items = Array.isArray(data) ? data : data?.blocked ?? data?.items ?? data?.blockedSubdomains ?? [];
       setBlocked(items);
     } catch {
       setBlocked([]);
