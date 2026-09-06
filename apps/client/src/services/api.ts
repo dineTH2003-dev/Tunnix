@@ -38,7 +38,11 @@ export async function apiRequest<T = any>(
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const response = await fetch(path, {
+  const apiBaseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+  const url = path.startsWith("http") ? path : `${apiBaseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
+
+  const response = await fetch(url, {
+    credentials: "include",
     ...options,
     headers,
   });
